@@ -768,6 +768,41 @@
 
         const buffer = gl.createBuffer();
 
+        // --- GPU Upload Optimizer ---
+        // Reuses one typed-array staging buffer instead of rebuilding a huge JS array every frame.
+        // This mainly reduces garbage collection and CPU-to-GPU upload overhead.
+        const FLOATS_PER_VERTEX = 10;
+        const MAX_EXPECTED_PARTICLES = Math.ceil(parseInt(countSlider.max) * 2.55);
+        const MAX_EXPECTED_PHOTONS = 350;
+        const MAX_RENDER_VERTICES =
+            (MAX_EXPECTED_PARTICLES * 20 * 2) + (MAX_EXPECTED_PHOTONS * 16) + 2048;
+
+        let vertexData = new Float32Array(MAX_RENDER_VERTICES * FLOATS_PER_VERTEX);
+        let vertexCount = 0;
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+        gl.bufferData(gl.ARRAY_BUFFER, vertexData.byteLength, gl.DYNAMIC_DRAW);
+
+        function beginVertexFrame() {
+            vertexCount = 0;
+        }
+
+        function pushVertex(x, y, r, g, b, a, size, type, density, entropy) {
+            if (vertexCount >= MAX_RENDER_VERTICES) return;
+            const i = vertexCount * FLOATS_PER_VERTEX;
+            vertexData[i] = x;
+            vertexData[i + 1] = y;
+            vertexData[i + 2] = r;
+            vertexData[i + 3] = g;
+            vertexData[i + 4] = b;
+            vertexData[i + 5] = a;
+            vertexData[i + 6] = size;
+            vertexData[i + 7] = type;
+            vertexData[i + 8] = density;
+            vertexData[i + 9] = entropy;
+            vertexCount++;
+        }
+
         // --- Grid Shaders ---
         const gridVsSource = `#version 300 es
             in vec2 a_position;
@@ -823,6 +858,13 @@
         // --- Simulation State Setup ---
         const particlePool = [];
         const MAX_TRAIL_LENGTH = 20;
+
+        // Infinite timeline scrub mode.
+        // Captures every physics tick and never discards old snapshots during the session.
+        // This gives a full rewind trail, but memory use will grow continuously.
+        const HISTORY_CAPTURE_STRIDE = 1;
+        let physicsTickCounter = 0;
+
         let photons = [];
         let colorMode = 0; 
 
@@ -920,10 +962,24 @@
             }
         }
 
+
+        function pushHistorySnapshot(force = false) {
+            // Full-resolution timeline: every physics tick can become a scrub point.
+            // No rolling cap: Reset Time or Trigger Big Bang clears it manually.
+            if (!force && HISTORY_CAPTURE_STRIDE > 1 && (physicsTickCounter % HISTORY_CAPTURE_STRIDE !== 0)) return;
+
+            const snap = captureState();
+            historyBuffer.push(snap);
+
+            // The newest stored snapshot is the current timeline endpoint.
+            historyIndex = historyBuffer.length - 1;
+        }
+
         function bigBang() {
             particlePool.length = 0;
             photons.length = 0;
             historyBuffer.length = 0;
+            physicsTickCounter = 0;
 
             const baseCount = parseInt(countSlider.value);
 
@@ -931,8 +987,7 @@
             createGroup('white', baseCount, 0.0, 0.66, 1.0, 4.0);                       
             createGroup('black', Math.floor(baseCount * 0.7), 0.88, 0.88, 0.88, 8.0);   
 
-            const startSnap = captureState();
-            historyBuffer.push(startSnap);
+            pushHistorySnapshot(true);
             historyIndex = 0;
             isPaused = false;
 
@@ -1011,8 +1066,8 @@
 
         btnClearHistory.addEventListener('click', () => {
             if (historyBuffer.length > 0) {
-                const current = captureState();
-                historyBuffer = [current];
+                historyBuffer.length = 0;
+                pushHistorySnapshot(true);
                 historyIndex = 0;
                 timeAccumulator = 0.0;
                 updateTimelineUI();
@@ -1272,10 +1327,7 @@
 
             gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
 
-            const vboData = [];
-            function pushVertex(x, y, r, g, b, a, size, type, density, entropy) {
-                vboData.push(x, y, r, g, b, a, size, type, density, entropy);
-            }
+            beginVertexFrame();
 
             const margin = 500.0 / camera.zoom; 
             const minWorldX = -width / (2 * camera.zoom) - camera.x - margin;
@@ -1329,10 +1381,15 @@
                 }
             });
 
-            const f32Array = new Float32Array(vboData);
-            gl.bufferData(gl.ARRAY_BUFFER, f32Array, gl.DYNAMIC_DRAW);
+            if (vertexCount > 0) {
+                gl.bufferSubData(
+                    gl.ARRAY_BUFFER,
+                    0,
+                    vertexData.subarray(0, vertexCount * FLOATS_PER_VERTEX)
+                );
+            }
 
-            const stride = 10 * 4; 
+            const stride = FLOATS_PER_VERTEX * 4; 
             
             gl.enableVertexAttribArray(positionLoc);
             gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, stride, 0);
@@ -1355,10 +1412,11 @@
             gl.enableVertexAttribArray(entropyLoc);
             gl.vertexAttribPointer(entropyLoc, 1, gl.FLOAT, false, stride, 9 * 4);
 
-            gl.drawArrays(gl.POINTS, 0, f32Array.length / 10);
+            gl.drawArrays(gl.POINTS, 0, vertexCount);
         }
 
         let lastFpsUpdate = 0;
+        let lastStabilityUpdate = 0;
         let framesCount = 0;
         let fpsValue = 60;
 
@@ -1374,9 +1432,8 @@
                 while (timeAccumulator >= 1.0) {
                     updatePhysics();
 
-                    const snap = captureState();
-                    historyBuffer.push(snap);
-                    
+                    physicsTickCounter++;
+                    pushHistorySnapshot(false);
                     historyIndex = historyBuffer.length - 1;
                     timeAccumulator -= 1.0;
                 }
@@ -1384,7 +1441,10 @@
                 updateTimelineUI();
             }
 
-            updateStabilityMetric();
+            if (timestamp - lastStabilityUpdate >= 250) {
+                updateStabilityMetric();
+                lastStabilityUpdate = timestamp;
+            }
 
             framesCount++;
             if (timestamp - lastFpsUpdate >= 500) {
@@ -1396,8 +1456,10 @@
 
             drawScene(); 
 
-            statRendered.textContent = renderedCount;
-            statHistory.textContent = historyBuffer.length;
+            if ((framesCount & 7) === 0) {
+                statRendered.textContent = renderedCount;
+                statHistory.textContent = historyBuffer.length;
+            }
 
             requestAnimationFrame(loop);
         }
