@@ -6,18 +6,20 @@
     <title>Quantum Particle Map</title>
     <style>
         :root {
-            --bg-color: #09090b;
-            --header-bg: #18181b;
-            --border-color: #27272a;
-            --border-hover: #3f3f46;
-            --text-main: #f4f4f5;
-            --text-muted: #a1a1aa;
-            --accent: #ffffff;
-            --accent-bg: #27272a;
-            --btn-bg: #18181b;
-            --btn-hover: #27272a;
+            --bg-color: #030303;
+            --header-bg: rgba(18, 18, 22, 0.85);
+            --border-color: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(255, 255, 255, 0.15);
+            --text-main: #f8f8f8;
+            --text-muted: #8a8a93;
+            --accent: #3b82f6;
+            --accent-hover: #60a5fa;
+            --accent-bg: rgba(59, 130, 246, 0.15);
+            --btn-bg: rgba(255, 255, 255, 0.03);
+            --btn-hover: rgba(255, 255, 255, 0.08);
             --danger: #ef4444;
             --success: #10b981;
+            --tab-active-border: #3b82f6;
         }
 
         body, html {
@@ -27,66 +29,131 @@
             height: 100%;
             background-color: var(--bg-color);
             overflow: hidden;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             display: flex;
             flex-direction: column;
             color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
-        /* --- Clean Professional Header --- */
         #site-header {
-            flex: 0 0 auto;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
             background: var(--header-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border-bottom: 1px solid var(--border-color);
-            padding: 16px 24px;
             z-index: 10;
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #site-header.collapsed {
+            transform: translateY(-100%);
+        }
+
+        #header-toggle-btn {
+            position: absolute;
+            bottom: -26px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--header-bg);
+            border: 1px solid var(--border-color);
+            border-top: none;
+            color: var(--text-muted);
+            padding: 4px 24px;
+            border-radius: 0 0 12px 12px;
+            cursor: pointer;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+            transition: all 0.2s ease;
+            z-index: -1; 
+        }
+
+        #header-toggle-btn:hover {
+            color: var(--text-main);
+            background: rgba(40, 40, 45, 0.9);
+            bottom: -28px; 
+        }
+
+        #header-toggle-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        #site-header.collapsed #header-toggle-btn svg {
+            transform: rotate(180deg);
         }
 
         .header-top {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 14px 28px;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .brand h1 {
             margin: 0;
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             font-weight: 600;
             color: var(--text-main);
-            letter-spacing: -0.02em;
+            letter-spacing: -0.01em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .brand h1::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent);
         }
 
         .telemetry-bar {
             display: flex;
-            gap: 24px;
-            background: var(--bg-color);
-            border: 1px solid var(--border-color);
-            padding: 6px 16px;
-            border-radius: 6px;
+            gap: 32px;
+            padding: 0;
+            border: none;
+            background: transparent;
         }
 
         .stat {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
         .stat .label {
             font-size: 0.65rem;
             text-transform: uppercase;
             color: var(--text-muted);
-            letter-spacing: 0.5px;
-            font-weight: 500;
+            letter-spacing: 0.8px;
+            font-weight: 600;
         }
 
         .stat span:last-child {
             font-size: 0.85rem;
-            font-weight: 600;
+            font-weight: 500;
+            font-variant-numeric: tabular-nums;
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
         }
+        
         #stat-fps { color: var(--success); }
         #stat-rendered { color: var(--text-main); }
         #stat-history { color: var(--text-main); }
@@ -94,213 +161,274 @@
         .header-actions {
             display: flex;
             align-items: center;
-            gap: 24px;
+            gap: 32px;
         }
 
         .stability-module {
-            width: 200px;
+            width: 220px;
         }
 
         .stab-header {
             display: flex;
             justify-content: space-between;
             font-size: 0.65rem;
-            font-weight: 500;
+            font-weight: 600;
             text-transform: uppercase;
             color: var(--text-muted);
-            margin-bottom: 6px;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
         }
 
         .bar-bg {
-            background: var(--bg-color);
+            background: rgba(0,0,0,0.4);
             border: 1px solid var(--border-color);
-            border-radius: 3px;
-            height: 4px;
+            border-radius: 4px;
+            height: 6px;
             width: 100%;
             overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
         }
 
         .bar-fill {
             height: 100%;
             width: 100%;
             background: var(--success);
-            transition: width 0.1s linear, background 0.3s ease;
+            transition: width 0.15s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease;
+            border-radius: 2px;
         }
 
         #stability-desc {
             font-size: 0.65rem;
             color: var(--text-muted);
-            margin-top: 6px;
+            margin-top: 8px;
             text-align: right;
-        }
-
-        #btn-help {
-            background: var(--btn-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 6px 12px;
-            border-radius: 6px;
             font-weight: 500;
-            font-size: 0.75rem;
-            cursor: pointer;
-            transition: all 0.15s ease;
-        }
-        #btn-help:hover {
-            background: var(--border-color);
         }
 
-        /* --- Header Controls Row --- */
-        .header-controls {
+        .tabs-container {
+            padding: 0 28px;
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        .tabs-nav {
             display: flex;
             gap: 24px;
+            border-bottom: 1px solid var(--border-color);
+            padding-top: 8px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            color: var(--text-muted);
+            border: none;
+            border-bottom: 2px solid transparent;
+            padding: 12px 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            margin-bottom: -1px;
+            letter-spacing: 0.3px;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+        }
+
+        .tab-btn.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+            font-weight: 600;
+        }
+
+        .tab-content {
+            padding: 20px 0;
+            min-height: 52px;
+        }
+
+        .tab-pane {
+            display: none;
+            gap: 40px;
             align-items: center;
             flex-wrap: wrap;
+        }
+
+        .tab-pane.active {
+            display: flex;
+            animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .control-group {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 10px;
         }
 
         .group-label {
             font-size: 0.65rem;
             text-transform: uppercase;
             color: var(--text-muted);
-            letter-spacing: 0.5px;
-            font-weight: 500;
+            letter-spacing: 0.8px;
+            font-weight: 600;
             display: flex;
             justify-content: space-between;
+            align-items: center;
         }
 
         .btn-group {
             display: flex;
-            background: var(--bg-color);
+            background: rgba(0, 0, 0, 0.3);
             border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 2px;
+            border-radius: 8px;
+            padding: 3px;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
         }
 
         .btn-mode {
             background: transparent;
             border: none;
             color: var(--text-muted);
-            padding: 4px 12px;
-            border-radius: 4px;
+            padding: 6px 14px;
+            border-radius: 6px;
             cursor: pointer;
             font-size: 0.75rem;
             font-weight: 500;
-            transition: all 0.15s ease;
+            transition: all 0.2s ease;
         }
 
         .btn-mode:hover { color: var(--text-main); }
         .btn-mode.active {
-            background: var(--accent-bg);
+            background: var(--btn-hover);
             color: var(--text-main);
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05);
         }
 
-        /* --- Render Engine Specific --- */
         .engine-controls {
             display: flex;
             align-items: center;
-            gap: 8px;
-            background: var(--bg-color);
+            gap: 12px;
+            background: rgba(0, 0, 0, 0.2);
             border: 1px solid var(--border-color);
-            padding: 2px 2px 2px 10px;
-            border-radius: 6px;
+            padding: 4px 4px 4px 12px;
+            border-radius: 8px;
         }
+        
         .gpu-text {
-            font-size: 0.65rem;
+            font-size: 0.7rem;
             color: var(--text-muted);
             font-family: ui-monospace, monospace;
-            max-width: 140px;
+            max-width: 150px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
+        
         .btn-toggle {
             background: transparent;
             border: none;
             color: var(--text-muted);
             font-size: 0.7rem;
-            font-weight: 500;
-            padding: 4px 8px;
-            border-radius: 4px;
+            font-weight: 600;
+            padding: 6px 10px;
+            border-radius: 6px;
             cursor: pointer;
-            transition: all 0.15s;
+            transition: all 0.2s;
         }
-        .btn-toggle:hover { color: var(--text-main); }
+        .btn-toggle:hover { color: var(--text-main); background: rgba(255,255,255,0.05); }
         .btn-toggle.active {
             background: var(--text-main);
-            color: var(--bg-color);
+            color: #000;
         }
 
         .slider-group {
-            min-width: 140px;
+            min-width: 180px;
         }
 
         input[type=range] {
             -webkit-appearance: none;
             width: 100%;
             background: transparent;
-            height: 16px; /* easier to click */
+            height: 20px; 
             outline: none;
             cursor: pointer;
         }
 
         input[type=range]::-webkit-slider-runnable-track {
             width: 100%;
-            height: 4px;
+            height: 3px;
             cursor: pointer;
-            background: var(--border-hover);
+            background: var(--border-color);
             border-radius: 2px;
+            transition: background 0.2s;
+        }
+
+        input[type=range]:hover::-webkit-slider-runnable-track {
+            background: var(--border-hover);
         }
 
         input[type=range]::-webkit-slider-thumb {
-            height: 12px;
-            width: 12px;
+            height: 14px;
+            width: 14px;
             border-radius: 50%;
             background: var(--text-main);
             cursor: pointer;
             -webkit-appearance: none;
-            margin-top: -4px;
+            margin-top: -5px;
+            box-shadow: 0 0 0 1px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.4);
+            transition: transform 0.1s;
+        }
+
+        input[type=range]:active::-webkit-slider-thumb {
+            transform: scale(1.15);
         }
 
         .actions {
             flex-direction: row;
             align-items: flex-end;
             margin-left: auto;
-            gap: 8px;
+            gap: 12px;
         }
 
         .btn-action {
             background: var(--btn-bg);
             border: 1px solid var(--border-color);
             color: var(--text-main);
-            padding: 6px 14px;
-            border-radius: 6px;
+            padding: 8px 16px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 500;
             font-size: 0.75rem;
-            transition: all 0.15s ease;
+            transition: all 0.2s ease;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.02), 0 1px 2px rgba(0,0,0,0.2);
         }
-        .btn-action:hover { background: var(--border-color); }
+        .btn-action:hover { 
+            background: var(--btn-hover); 
+            border-color: var(--border-hover);
+        }
+        .btn-action:active {
+            transform: translateY(1px);
+        }
 
         .btn-primary {
-            background: var(--text-main);
-            color: var(--bg-color);
-            border-color: var(--text-main);
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
             font-weight: 600;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 2px 6px rgba(59, 130, 246, 0.3);
         }
         .btn-primary:hover {
-            background: #d4d4d8;
-            border-color: #d4d4d8;
+            background: var(--accent-hover);
+            border-color: var(--accent-hover);
         }
 
-        /* --- Canvas Container --- */
         main {
-            flex: 1 1 auto;
+            width: 100%;
+            height: 100%;
             position: relative;
         }
         
@@ -312,19 +440,18 @@
         }
         canvas:active { cursor: grabbing; }
 
-        /* --- Help Modal --- */
         #help-modal {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(4px);
-            -webkit-backdrop-filter: blur(4px);
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 100;
             opacity: 1;
-            transition: opacity 0.2s;
+            transition: opacity 0.3s ease;
         }
         #help-modal.hidden {
             opacity: 0;
@@ -334,71 +461,71 @@
         .help-content {
             background: var(--header-bg);
             border: 1px solid var(--border-color);
-            padding: 32px;
-            border-radius: 12px;
-            max-width: 500px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            padding: 40px;
+            border-radius: 16px;
+            max-width: 540px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255,255,255,0.05);
         }
 
         .help-content h2 {
             margin-top: 0;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             font-weight: 600;
             color: var(--text-main);
             border-bottom: 1px solid var(--border-color);
-            padding-bottom: 12px;
-            margin-bottom: 20px;
+            padding-bottom: 16px;
+            margin-bottom: 24px;
         }
 
-        .help-content p {
+        .help-content p, .help-content ul {
             font-size: 0.9rem;
             color: var(--text-muted);
-            line-height: 1.5;
+            line-height: 1.6;
         }
 
         .help-content ul {
             padding-left: 20px;
-            color: var(--text-muted);
-            line-height: 1.6;
-            font-size: 0.85rem;
         }
 
-        .help-content li { margin-bottom: 12px; }
+        .help-content li { margin-bottom: 14px; }
         .help-content strong { color: var(--text-main); font-weight: 600; }
 
         .badge {
             display: inline-block;
-            padding: 2px 8px;
-            border-radius: 4px;
+            padding: 3px 8px;
+            border-radius: 6px;
             font-size: 0.7rem;
             font-weight: 600;
             vertical-align: middle;
             margin-right: 4px;
+            border: 1px solid rgba(255,255,255,0.1);
         }
-        .proton-badge { background: #fee2e2; color: #b91c1c; }
-        .electron-badge { background: #e0f2fe; color: #1d4ed8; }
-        .neutron-badge { background: #f4f4f5; color: #3f3f46; }
+        .proton-badge { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border-color: rgba(239, 68, 68, 0.3); }
+        .electron-badge { background: rgba(59, 130, 246, 0.15); color: #93c5fd; border-color: rgba(59, 130, 246, 0.3); }
+        .neutron-badge { background: rgba(255, 255, 255, 0.1); color: #e4e4e7; }
 
         #btn-close-help {
-            margin-top: 24px;
+            margin-top: 32px;
             width: 100%;
             background: var(--text-main);
-            color: var(--bg-color);
+            color: #000;
             border: none;
-            padding: 10px;
+            padding: 12px;
             font-weight: 600;
             font-size: 0.85rem;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(255,255,255,0.1);
         }
-        #btn-close-help:hover { background: #d4d4d8; }
-
+        #btn-close-help:hover { 
+            background: #e4e4e7; 
+            transform: translateY(-1px);
+        }
     </style>
 </head>
 <body>
     
-    <!-- Site Dashboard Header -->
     <header id="site-header">
         <div class="header-top">
             <div class="brand">
@@ -422,72 +549,102 @@
                     </div>
                     <div id="stability-desc">Equilibrium: Stable</div>
                 </div>
-                <button id="btn-help">Guide</button>
+                <button class="btn-action" id="btn-help">Guide</button>
             </div>
         </div>
 
-        <div class="header-controls">
-            <div class="control-group">
-                <span class="group-label">Draw Mode</span>
-                <div class="btn-group">
-                    <button class="btn-mode active" id="btn-color-quantum">Trails</button>
-                    <button class="btn-mode" id="btn-color-clutter">Clutter</button>
-                    <button class="btn-mode" id="btn-color-entropy">Entropy</button>
+        <div class="tabs-container">
+            <!-- Navigation -->
+            <div class="tabs-nav">
+                <button class="tab-btn active" data-target="pane-time">Time & Controls</button>
+                <button class="tab-btn" data-target="pane-display">Display & Render</button>
+                <button class="tab-btn" data-target="pane-sim">Simulation</button>
+            </div>
+
+            <!-- Tab Contents -->
+            <div class="tab-content">
+                
+                <!-- Time Pane -->
+                <div id="pane-time" class="tab-pane active">
+                    <div class="control-group slider-group">
+                        <!-- Capped max time to 3.0 to prevent physics explosion -->
+                        <span class="group-label"><span>Time Dilate</span> <span id="time-value" style="color: var(--text-main);">1.00x</span></span>
+                        <input type="range" id="time-slider" min="0.0" max="3.0" step="0.01" value="1.0">
+                    </div>
+
+                    <div class="control-group slider-group">
+                        <span class="group-label"><span>Timeline Scrub</span> <span id="timeline-value" style="color: var(--text-main);">0/0</span></span>
+                        <input type="range" id="timeline-slider" min="0" max="0" value="0" disabled>
+                    </div>
+
+                    <div class="control-group actions" style="margin-left: 0;">
+                        <button class="btn-action" id="btn-play-pause">Pause</button>
+                        <button class="btn-action" id="btn-clear-history">Clear History</button>
+                    </div>
                 </div>
-            </div>
 
-            <div class="control-group">
-                <span class="group-label">Render Engine</span>
-                <div class="engine-controls">
-                    <span id="gpu-info" class="gpu-text" title="Detected Hardware">Scanning...</span>
-                    <button class="btn-toggle active" id="btn-toggle-culling">Smart Culling: ON</button>
+                <!-- Display Pane -->
+                <div id="pane-display" class="tab-pane">
+                    <div class="control-group">
+                        <span class="group-label">Draw Mode</span>
+                        <div class="btn-group">
+                            <button class="btn-mode active" id="btn-color-quantum">Trails</button>
+                            <button class="btn-mode" id="btn-color-clutter">Clutter</button>
+                            <button class="btn-mode" id="btn-color-entropy">Entropy</button>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <span class="group-label">Render Engine</span>
+                        <div class="engine-controls">
+                            <span id="gpu-info" class="gpu-text" title="Detected Hardware">Scanning...</span>
+                            <button class="btn-toggle active" id="btn-toggle-culling">Smart Culling: ON</button>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            <div class="control-group slider-group">
-                <span class="group-label"><span>Spawn Count</span> <span id="count-value" style="color: var(--text-main);">200</span></span>
-                <input type="range" id="count-slider" min="50" max="5000" step="50" value="200">
-            </div>
+                <!-- Simulation Pane -->
+                <div id="pane-sim" class="tab-pane">
+                    <div class="control-group slider-group">
+                        <span class="group-label"><span>Spawn Count</span> <span id="count-value" style="color: var(--text-main);">200</span></span>
+                        <input type="range" id="count-slider" min="50" max="5000" step="50" value="200">
+                    </div>
 
-            <div class="control-group slider-group">
-                <span class="group-label"><span>Time Dilate</span> <span id="time-value" style="color: var(--text-main);">1.00x</span></span>
-                <input type="range" id="time-slider" min="0.0" max="5.0" step="0.01" value="1.0">
-            </div>
+                    <div class="control-group actions" style="margin-left: 0;">
+                        <button class="btn-action btn-primary" id="btn-bang">Trigger Big Bang</button>
+                    </div>
+                </div>
 
-            <div class="control-group slider-group">
-                <span class="group-label"><span>Timeline Scrub</span> <span id="timeline-value" style="color: var(--text-main);">0/0</span></span>
-                <input type="range" id="timeline-slider" min="0" max="0" value="0" disabled>
-            </div>
-
-            <div class="control-group actions">
-                <button class="btn-action" id="btn-play-pause">Pause</button>
-                <button class="btn-action" id="btn-clear-history">Reset Time</button>
-                <button class="btn-action btn-primary" id="btn-bang">Trigger Big Bang</button>
             </div>
         </div>
+        
+        <!-- Pull Tab to collapse header -->
+        <button id="header-toggle-btn" aria-label="Toggle Header">
+            <svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
+        </button>
     </header>
 
     <main id="main-area">
         <canvas id="canvas"></canvas>
 
-        <!-- "What to do" Guide Modal -->
         <div id="help-modal" class="hidden">
             <div class="help-content">
                 <h2>Welcome to Quantum Particle Map</h2>
-                <p>This is a hardware-accelerated physics engine calculating continuous probability logic and interactions. Here is how to use the map:</p>
+                <p>This is a hardware-accelerated physics engine calculating continuous probability logic and interactions.</p>
                 <ul>
-                    <li><strong>Navigation:</strong> Use your <strong>scroll wheel</strong> to zoom in and out of the universe. <strong>Click and drag</strong> to pan the camera around the map.</li>
-                    <li><strong>Time Control:</strong> Use the <em>Time Dilate</em> slider to run the universe in extreme slow-motion or fast-forward. Use the <em>Timeline Scrub</em> to physically travel back in time.</li>
+                    <li><strong>Navigation:</strong> Use your <strong>scroll wheel</strong> to zoom in/out. <strong>Click and drag</strong> to pan around.</li>
+                    <li><strong>Time Control:</strong> Use the <em>Time Dilate</em> slider in the <strong>Time & Controls</strong> tab to slow down or speed up logic. Use <em>Timeline Scrub</em> to travel back in time.</li>
                     <li><strong>The Physics:</strong> 
-                        <br><span class="badge proton-badge">Protons (+)</span> Anchor elements. Attract electrons and neutrons, repel each other.
+                        <br><span class="badge proton-badge">Protons (+)</span> Anchor elements. Attract electrons and neutrons.
                         <br><span class="badge electron-badge">Electrons (-)</span> Buzz wildly. Attracted to protons, repel electrons.
-                        <br><span class="badge neutron-badge">Neutrons (0)</span> Nuclear glue. They cluster tightly to hold structures together.
-                        <br>Watch for <em>Photons</em>—high energy flashes of light emitted when particles clash violently!
+                        <br><span class="badge neutron-badge">Neutrons (0)</span> Nuclear glue. Hold structures together.
+                        <br>Watch for <em>Photons</em>—flashes of light emitted during violent clashes!
+                        <br><strong>Critical Mass:</strong> If too many protons and neutrons clump together, the atom becomes unstable and violently undergoes fission!
                     </li>
                     <li><strong>Draw Modes:</strong> 
-                        <br><em>Trails:</em> Visualizes the historic quantum strings.
+                        <br><em>Trails:</em> Visualizes historic strings.
                         <br><em>Clutter:</em> Maps out dense areas in thermal color.
-                        <br><em>Entropy:</em> Maps the kinetic energy (velocity) of the elements. Cold is purple, hot/fast is bright pink.
+                        <br><em>Entropy:</em> Maps kinetic energy (Cold=purple, Hot=pink).
                     </li>
                 </ul>
                 <button id="btn-close-help">Continue to Simulation</button>
@@ -499,7 +656,7 @@
         const canvas = document.getElementById('canvas');
         const header = document.getElementById('site-header');
         
-        // Hint browsers to use the dedicated APU/GPU compute units
+        // Setup high performance WebGL 2 Context
         const gl = canvas.getContext('webgl2', { alpha: false, antialias: true, powerPreference: "high-performance" });
 
         if (!gl) {
@@ -509,14 +666,38 @@
         let width, height;
         function resize() {
             width = window.innerWidth;
-            height = window.innerHeight - header.offsetHeight; // Fit canvas exactly under the header
+            height = window.innerHeight; // Canvas now fills the whole window behind the overlay header
             canvas.width = width;
             canvas.height = height;
             gl.viewport(0, 0, width, height);
         }
         window.addEventListener('resize', resize);
-        // Delay initial resize slightly to allow CSS flexbox to compute header height
-        setTimeout(resize, 10); 
+        
+        // --- Tab Logic ---
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabPanes = document.querySelectorAll('.tab-pane');
+
+        // Header Toggle Logic
+        const headerToggleBtn = document.getElementById('header-toggle-btn');
+        headerToggleBtn.addEventListener('click', () => {
+            header.classList.toggle('collapsed');
+        });
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active classes
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabPanes.forEach(p => p.classList.remove('active'));
+                
+                // Add to clicked
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.target).classList.add('active');
+                
+                // Trigger resize incase the new tab pane is slightly taller/shorter
+                setTimeout(resize, 10);
+            });
+        });
+        setTimeout(resize, 10); // Initial resize
 
         // --- DOM Elements Selection ---
         const countSlider = document.getElementById('count-slider');
@@ -554,19 +735,17 @@
 
         // --- GPU / APU Detection Engine ---
         let detectedGPU = "Unknown Architecture";
-        
         const ext = gl.getExtension('WEBGL_debug_renderer_info');
         if (ext) {
             detectedGPU = gl.getParameter(ext.UNMASKED_RENDERER_WEBGL);
-            // Clean common messy OS/Browser wrapper strings to make the hardware name readable
             let cleanGPU = detectedGPU.replace(/ANGLE \(/g, '').replace(/\)/g, '').replace(/Direct3D.*/, '').trim();
             gpuInfoDisplay.textContent = cleanGPU;
-            gpuInfoDisplay.title = detectedGPU; // Full diagnostic string on hover
+            gpuInfoDisplay.title = detectedGPU; 
         } else {
             gpuInfoDisplay.textContent = "Generic WebGL";
         }
 
-        // --- Modal Logic ---
+        // --- STREAMING_CHUNK:Setting up Modal & Camera Logic ---
         btnHelp.addEventListener('click', () => {
             helpModal.classList.remove('hidden');
         });
@@ -574,7 +753,7 @@
             helpModal.classList.add('hidden');
         });
 
-        // --- Camera State & Controls (Updated for Header Offset) ---
+        // Camera Data
         let camera = { x: 0, y: 0, zoom: 0.8 };
         let isDragging = false;
         let lastMouse = { x: 0, y: 0 };
@@ -598,7 +777,6 @@
         canvas.addEventListener('wheel', (e) => {
             e.preventDefault();
             const rect = canvas.getBoundingClientRect();
-            // Account for header offset securely
             const mouseX = e.clientX - rect.left;
             const mouseY = e.clientY - rect.top;
 
@@ -617,7 +795,7 @@
             camera.y = (height / 2 - mouseY) / camera.zoom - worldY;
         }, { passive: false });
 
-        // --- Shaders Source ---
+        // --- STREAMING_CHUNK:Compiling Core Shaders ---
         const vsSource = `#version 300 es
             in vec2 a_position;
             in vec4 a_color;
@@ -638,16 +816,11 @@
             out float v_entropy;
 
             void main() {
-                // Apply Camera Transform
                 vec2 worldPos = a_position + u_camera_pos;
                 vec2 screenPos = worldPos * u_camera_zoom;
-                
-                // Project from screen dimension coordinates down to clip space (-1 to 1)
                 vec2 clipSpace = screenPos / (u_resolution * 0.5);
-                
                 gl_Position = vec4(clipSpace, 0.0, 1.0);
-                
-                gl_PointSize = a_size * 2.2 * u_camera_zoom;
+                gl_PointSize = a_size * u_camera_zoom;
                 
                 v_color = a_color;
                 v_alpha = a_alpha;
@@ -686,50 +859,39 @@
             void main() {
                 vec2 coord = gl_PointCoord - vec2(0.5);
                 float distSq = dot(coord, coord);
-                
                 if (distSq > 0.25) discard;
 
                 vec3 waveSpectrum = vec3(0.0);
                 
                 if (u_color_mode == 2) {
-                    // ENTROPY MAP MODE
                     float waveAmp = exp(-distSq * 10.0); 
                     
-                    vec3 colorLow = vec3(0.1, 0.0, 0.3);   
-                    vec3 colorMid = vec3(0.8, 0.2, 1.0);   
-                    vec3 colorHigh = vec3(1.0, 0.9, 0.9);  
+                    // Enhanced high-energy palette for entropy
+                    vec3 e1 = vec3(0.02, 0.0, 0.1);    // Void / cold
+                    vec3 e2 = vec3(0.3, 0.0, 0.8);     // Deep purple
+                    vec3 e3 = vec3(1.0, 0.0, 0.5);     // Neon pink
+                    vec3 e4 = vec3(0.0, 1.0, 1.0);     // Intense cyan
+                    vec3 e5 = vec3(1.0, 1.0, 1.0);     // Superheated white
 
-                    if (v_entropy < 0.5) {
-                        waveSpectrum = mix(colorLow, colorMid, v_entropy * 2.0);
-                    } else {
-                        waveSpectrum = mix(colorMid, colorHigh, (v_entropy - 0.5) * 2.0);
-                    }
+                    if (v_entropy < 0.25) waveSpectrum = mix(e1, e2, v_entropy * 4.0);
+                    else if (v_entropy < 0.5) waveSpectrum = mix(e2, e3, (v_entropy - 0.25) * 4.0);
+                    else if (v_entropy < 0.75) waveSpectrum = mix(e3, e4, (v_entropy - 0.5) * 4.0);
+                    else waveSpectrum = mix(e4, e5, (v_entropy - 0.75) * 4.0);
                     
-                    outColor = vec4(waveSpectrum * waveAmp * 1.5, waveAmp * v_alpha);
+                    // Hotter particles glow significantly brighter
+                    float glowBoost = 1.0 + (v_entropy * 2.5); 
+                    outColor = vec4(waveSpectrum * waveAmp * 1.5 * glowBoost, waveAmp * v_alpha * glowBoost);
 
                 } else {
-                    float waveAmp = exp(-distSq * 10.0);
+                    float waveAmp = exp(-distSq * 12.0); // Slightly sharper center dropoff
                     
                     if (u_color_mode == 1) {
-                        // Clutter Spectrum
                         waveSpectrum = getThermalColor(v_density * waveAmp);
                     } else {
-                        // Quantum Colors
-                        if (v_type == 1.0) {
-                            waveSpectrum = mix(vec3(0.0, 0.1, 0.4), vec3(0.0, 0.8, 1.0), waveAmp);
-                            waveSpectrum = mix(waveSpectrum, vec3(1.0), smoothstep(0.7, 1.0, waveAmp));
-                        } else if (v_type == 0.0) {
-                            waveSpectrum = mix(vec3(0.3, 0.0, 0.05), vec3(1.0, 0.1, 0.3), waveAmp);
-                            waveSpectrum = mix(waveSpectrum, vec3(1.0, 0.9, 0.5), smoothstep(0.6, 1.0, waveAmp));
-                        } else if (v_type == 2.0) {
-                            waveSpectrum = mix(vec3(0.1, 0.1, 0.12), vec3(0.8, 0.8, 0.9), waveAmp);
-                            waveSpectrum = mix(waveSpectrum, vec3(1.0), smoothstep(0.7, 1.0, waveAmp));
-                        } else {
-                            waveSpectrum = vec3(1.0, 0.85, 0.1);
-                        }
+                        // Color overrides based on v_color provided by JS
+                        waveSpectrum = v_color.rgb;
                     }
-                    
-                    outColor = vec4(waveSpectrum * waveAmp * 1.5, waveAmp * v_alpha);
+                    outColor = vec4(waveSpectrum * waveAmp, waveAmp * v_alpha);
                 }
             }
         `;
@@ -753,6 +915,7 @@
         gl.attachShader(program, fragmentShader);
         gl.linkProgram(program);
 
+        // --- STREAMING_CHUNK:Configuring Buffers and Upload Optimizer ---
         const positionLoc = gl.getAttribLocation(program, 'a_position');
         const colorLoc = gl.getAttribLocation(program, 'a_color');
         const sizeLoc = gl.getAttribLocation(program, 'a_size');
@@ -768,14 +931,11 @@
 
         const buffer = gl.createBuffer();
 
-        // --- GPU Upload Optimizer ---
-        // Reuses one typed-array staging buffer instead of rebuilding a huge JS array every frame.
-        // This mainly reduces garbage collection and CPU-to-GPU upload overhead.
         const FLOATS_PER_VERTEX = 10;
         const MAX_EXPECTED_PARTICLES = Math.ceil(parseInt(countSlider.max) * 2.55);
-        const MAX_EXPECTED_PHOTONS = 350;
-        const MAX_RENDER_VERTICES =
-            (MAX_EXPECTED_PARTICLES * 20 * 2) + (MAX_EXPECTED_PHOTONS * 16) + 2048;
+        const MAX_EXPECTED_PHOTONS = 800; // Increased to handle fission bursts
+        // Upped vertex count size for 3-layer tails
+        const MAX_RENDER_VERTICES = (MAX_EXPECTED_PARTICLES * 20 * 3) + (MAX_EXPECTED_PHOTONS * 16 * 2) + 2048;
 
         let vertexData = new Float32Array(MAX_RENDER_VERTICES * FLOATS_PER_VERTEX);
         let vertexCount = 0;
@@ -783,41 +943,30 @@
         gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
         gl.bufferData(gl.ARRAY_BUFFER, vertexData.byteLength, gl.DYNAMIC_DRAW);
 
-        function beginVertexFrame() {
-            vertexCount = 0;
-        }
+        function beginVertexFrame() { vertexCount = 0; }
 
         function pushVertex(x, y, r, g, b, a, size, type, density, entropy) {
             if (vertexCount >= MAX_RENDER_VERTICES) return;
             const i = vertexCount * FLOATS_PER_VERTEX;
-            vertexData[i] = x;
-            vertexData[i + 1] = y;
-            vertexData[i + 2] = r;
-            vertexData[i + 3] = g;
-            vertexData[i + 4] = b;
-            vertexData[i + 5] = a;
-            vertexData[i + 6] = size;
-            vertexData[i + 7] = type;
-            vertexData[i + 8] = density;
-            vertexData[i + 9] = entropy;
+            vertexData[i] = x; vertexData[i + 1] = y;
+            vertexData[i + 2] = r; vertexData[i + 3] = g; vertexData[i + 4] = b;
+            vertexData[i + 5] = a; vertexData[i + 6] = size; vertexData[i + 7] = type;
+            vertexData[i + 8] = density; vertexData[i + 9] = entropy;
             vertexCount++;
         }
 
-        // --- Grid Shaders ---
+        // --- STREAMING_CHUNK:Grid Shaders and Logic ---
         const gridVsSource = `#version 300 es
             in vec2 a_position;
             uniform vec2 u_resolution;
             uniform vec2 u_camera_pos;
             uniform float u_camera_zoom;
-
             void main() {
                 vec2 worldPos = a_position + u_camera_pos;
-                vec2 screenPos = worldPos * u_camera_zoom;
-                vec2 clipSpace = screenPos / (u_resolution * 0.5);
+                vec2 clipSpace = (worldPos * u_camera_zoom) / (u_resolution * 0.5);
                 gl_Position = vec4(clipSpace, 0.0, 1.0);
             }
         `;
-
         const gridFsSource = `#version 300 es
             precision highp float;
             uniform float u_camera_zoom;
@@ -841,46 +990,33 @@
         const gridCameraZoomLoc = gl.getUniformLocation(gridProgram, 'u_camera_zoom');
 
         const gridBuffer = gl.createBuffer();
-
         const gridVertices = [];
-        const gridSize = 100;
-        const gridExtents = 6000; 
-        for (let x = -gridExtents; x <= gridExtents; x += gridSize) {
-            gridVertices.push(x, -gridExtents, x, gridExtents);
-        }
-        for (let y = -gridExtents; y <= gridExtents; y += gridSize) {
-            gridVertices.push(-gridExtents, y, gridExtents, y);
-        }
+        const gridSize = 100, gridExtents = 6000; 
+        for (let x = -gridExtents; x <= gridExtents; x += gridSize) gridVertices.push(x, -gridExtents, x, gridExtents);
+        for (let y = -gridExtents; y <= gridExtents; y += gridSize) gridVertices.push(-gridExtents, y, gridExtents, y);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, gridBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(gridVertices), gl.STATIC_DRAW);
 
-        // --- Simulation State Setup ---
+        // --- STREAMING_CHUNK:Simulation State and State Management ---
         const particlePool = [];
         const MAX_TRAIL_LENGTH = 20;
-
-        // Infinite timeline scrub mode.
-        // Captures every physics tick and never discards old snapshots during the session.
-        // This gives a full rewind trail, but memory use will grow continuously.
         const HISTORY_CAPTURE_STRIDE = 1;
         let physicsTickCounter = 0;
-
         let photons = [];
         let colorMode = 0; 
-
         let historyBuffer = [];
         let historyIndex = 0;
         let isPaused = false;
+        let timeScale = 1.0;
 
         function createGroup(type, count, r, g, b, radius) {
             for (let i = 0; i < count; i++) {
                 const angle = Math.random() * Math.PI * 2;
                 const speed = 0.5 + Math.random() * 18.0; 
-                let initVx = Math.cos(angle) * speed;
-                let initVy = Math.sin(angle) * speed;
-
                 particlePool.push({
-                    x: 0, y: 0, vx: initVx, vy: initVy,
+                    x: 0, y: 0, 
+                    vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
                     type: type, r: r, g: g, b: b, radius: radius, density: 0.0, history: [] 
                 });
             }
@@ -892,25 +1028,20 @@
             const size = 2 + numParticles * 6 + numPhotons * 5;
             const data = new Float32Array(size);
 
-            data[0] = numParticles;
-            data[1] = numPhotons;
-
+            data[0] = numParticles; data[1] = numPhotons;
             let idx = 2;
+            
             for (let i = 0; i < numParticles; i++) {
                 const p = particlePool[i];
                 data[idx++] = p.x; data[idx++] = p.y; data[idx++] = p.vx; data[idx++] = p.vy;
-                
-                let typeId = 0.0; 
-                if (p.type === 'white') typeId = 1.0;
-                else if (p.type === 'black') typeId = 2.0;
-                data[idx++] = typeId; data[idx++] = p.density;
+                data[idx++] = (p.type === 'white') ? 1.0 : (p.type === 'black') ? 2.0 : 0.0; 
+                data[idx++] = p.density;
             }
 
             for (let i = 0; i < numPhotons; i++) {
                 const p = photons[i];
                 data[idx++] = p.x; data[idx++] = p.y; data[idx++] = p.vx; data[idx++] = p.vy; data[idx++] = p.life;
             }
-
             return data;
         }
 
@@ -918,7 +1049,6 @@
             if (!data) return;
             const numParticles = data[0];
             const numPhotons = data[1];
-
             let idx = 2;
 
             while (particlePool.length < numParticles) {
@@ -931,9 +1061,9 @@
                 p.x = data[idx++]; p.y = data[idx++]; p.vx = data[idx++]; p.vy = data[idx++];
                 const typeId = data[idx++]; p.density = data[idx++];
 
-                if (typeId === 0.0) { p.type = 'red'; p.r = 1.0; p.g = 0.2; p.b = 0.27; p.radius = 6.0; } 
-                else if (typeId === 1.0) { p.type = 'white'; p.r = 0.0; p.g = 0.66; p.b = 1.0; p.radius = 4.0; } 
-                else { p.type = 'black'; p.r = 0.88; p.g = 0.88; p.b = 0.88; p.radius = 8.0; }
+                if (typeId === 0.0) { p.type = 'red'; p.r = 0.8; p.g = 0.1; p.b = 0.2; p.radius = 6.0; } 
+                else if (typeId === 1.0) { p.type = 'white'; p.r = 0.0; p.g = 0.6; p.b = 1.0; p.radius = 4.0; } 
+                else { p.type = 'black'; p.r = 0.6; p.g = 0.6; p.b = 0.7; p.radius = 8.0; }
 
                 if (p.history.length === 0) {
                     for (let h = 0; h < MAX_TRAIL_LENGTH; h++) p.history.push({ x: p.x, y: p.y, vx: p.vx, vy: p.vy });
@@ -962,16 +1092,11 @@
             }
         }
 
-
+        // --- STREAMING_CHUNK:Event Listeners for Controls ---
         function pushHistorySnapshot(force = false) {
-            // Full-resolution timeline: every physics tick can become a scrub point.
-            // No rolling cap: Reset Time or Trigger Big Bang clears it manually.
             if (!force && HISTORY_CAPTURE_STRIDE > 1 && (physicsTickCounter % HISTORY_CAPTURE_STRIDE !== 0)) return;
-
             const snap = captureState();
             historyBuffer.push(snap);
-
-            // The newest stored snapshot is the current timeline endpoint.
             historyIndex = historyBuffer.length - 1;
         }
 
@@ -982,15 +1107,14 @@
             physicsTickCounter = 0;
 
             const baseCount = parseInt(countSlider.value);
-
-            createGroup('red', Math.floor(baseCount * 0.85), 1.0, 0.2, 0.27, 6.0);    
-            createGroup('white', baseCount, 0.0, 0.66, 1.0, 4.0);                       
-            createGroup('black', Math.floor(baseCount * 0.7), 0.88, 0.88, 0.88, 8.0);   
+            // Modified base colors slightly for better blending
+            createGroup('red', Math.floor(baseCount * 0.85), 0.8, 0.1, 0.2, 6.0);    
+            createGroup('white', baseCount, 0.0, 0.6, 1.0, 4.0);                       
+            createGroup('black', Math.floor(baseCount * 0.7), 0.6, 0.6, 0.7, 8.0);   
 
             pushHistorySnapshot(true);
             historyIndex = 0;
             isPaused = false;
-
             btnPlayPause.textContent = "Pause";
             updateTimelineUI();
         }
@@ -1003,57 +1127,35 @@
             timelineValueDisplay.textContent = `${historyIndex} / ${historyBuffer.length - 1}`;
         }
 
-        let timeScale = 1.0;
-
-        countSlider.addEventListener('input', (e) => { countValueDisplay.textContent = e.target.value; });
+        countSlider.addEventListener('input', (e) => countValueDisplay.textContent = e.target.value);
         timeSlider.addEventListener('input', (e) => { 
             timeScale = parseFloat(e.target.value);
             timeValueDisplay.textContent = timeScale.toFixed(2) + 'x';
         });
 
-        btnColorQuantum.addEventListener('click', () => {
-            colorMode = 0;
-            btnColorQuantum.classList.add('active');
-            btnColorClutter.classList.remove('active');
-            btnColorEntropy.classList.remove('active');
-        });
+        btnColorQuantum.addEventListener('click', () => { colorMode = 0; updateDrawModes(btnColorQuantum); });
+        btnColorClutter.addEventListener('click', () => { colorMode = 1; updateDrawModes(btnColorClutter); });
+        btnColorEntropy.addEventListener('click', () => { colorMode = 2; updateDrawModes(btnColorEntropy); });
 
-        btnColorClutter.addEventListener('click', () => {
-            colorMode = 1;
-            btnColorClutter.classList.add('active');
-            btnColorQuantum.classList.remove('active');
-            btnColorEntropy.classList.remove('active');
-        });
-
-        btnColorEntropy.addEventListener('click', () => {
-            colorMode = 2;
-            btnColorEntropy.classList.add('active');
-            btnColorQuantum.classList.remove('active');
-            btnColorClutter.classList.remove('active');
-        });
+        function updateDrawModes(activeBtn) {
+            [btnColorQuantum, btnColorClutter, btnColorEntropy].forEach(b => b.classList.remove('active'));
+            activeBtn.classList.add('active');
+        }
 
         let useCulling = true;
         btnToggleCulling.addEventListener('click', () => {
             useCulling = !useCulling;
-            if (useCulling) {
-                btnToggleCulling.classList.add('active');
-                btnToggleCulling.textContent = "Smart Culling: ON";
-            } else {
-                btnToggleCulling.classList.remove('active');
-                btnToggleCulling.textContent = "Smart Culling: OFF";
-            }
+            btnToggleCulling.classList.toggle('active', useCulling);
+            btnToggleCulling.textContent = useCulling ? "Smart Culling: ON" : "Smart Culling: OFF";
         });
 
         let timeAccumulator = 0.0;
-
         timelineSlider.addEventListener('input', (e) => {
             isPaused = true;
             btnPlayPause.textContent = "Play";
             historyIndex = parseInt(e.target.value);
             timeAccumulator = 0.0;
-            
             timelineValueDisplay.textContent = `${historyIndex} / ${historyBuffer.length - 1}`;
-            
             const snap = historyBuffer[historyIndex];
             if (snap) restoreState(snap);
         });
@@ -1074,11 +1176,10 @@
             }
         });
 
-        btnBang.addEventListener('click', () => { bigBang(); });
-
+        btnBang.addEventListener('click', bigBang);
         bigBang();
 
-        // --- Physics Solver ---
+        // --- STREAMING_CHUNK:Physics Solver ---
         const CELL_SIZE = 180; 
         function updatePhysics() {
             if (isPaused) return;
@@ -1092,27 +1193,22 @@
                 const cx = Math.floor(p.x / CELL_SIZE);
                 const cy = Math.floor(p.y / CELL_SIZE);
                 const key = (cx & 0xFFFF) | ((cy & 0xFFFF) << 16); 
-                
                 let cell = grid.get(key);
                 if (!cell) { cell = []; grid.set(key, cell); }
                 cell.push(p);
             }
 
-            const interactionRadius = 180;
-            const interactionRadiusSq = interactionRadius * interactionRadius;
+            const interactionRadius = 180, interactionRadiusSq = interactionRadius * interactionRadius;
             const closeRepelRadius = 24;
 
             for (let i = 0; i < total; i++) {
                 let a = particlePool[i];
                 let fx = 0, fy = 0;
-
-                const cx = Math.floor(a.x / CELL_SIZE);
-                const cy = Math.floor(a.y / CELL_SIZE);
+                const cx = Math.floor(a.x / CELL_SIZE), cy = Math.floor(a.y / CELL_SIZE);
 
                 for (let dx = -1; dx <= 1; dx++) {
                     for (let dy = -1; dy <= 1; dy++) {
-                        const nx = cx + dx;
-                        const ny = cy + dy;
+                        const nx = cx + dx, ny = cy + dy;
                         const key = (nx & 0xFFFF) | ((ny & 0xFFFF) << 16);
                         const cell = grid.get(key);
 
@@ -1122,8 +1218,7 @@
                                 const b = cell[k];
                                 if (a === b) continue;
 
-                                let rx = a.x - b.x;
-                                let ry = a.y - b.y;
+                                let rx = a.x - b.x, ry = a.y - b.y;
                                 let distSq = rx * rx + ry * ry;
 
                                 if (distSq > 0 && distSq < interactionRadiusSq) {
@@ -1132,17 +1227,13 @@
 
                                     if (dist < closeRepelRadius) {
                                         let repel = 5.0 * (1.0 - dist / closeRepelRadius);
-                                        fx += (rx / dist) * repel;
-                                        fy += (ry / dist) * repel;
+                                        fx += (rx / dist) * repel; fy += (ry / dist) * repel;
 
                                         if (Math.random() < 0.001 && photons.length < 350) {
-                                            let burstX = (Math.random() - 0.5) * 45;
-                                            let burstY = (Math.random() - 0.5) * 45;
+                                            let burstX = (Math.random() - 0.5) * 45, burstY = (Math.random() - 0.5) * 45;
                                             a.vx += burstX; a.vy += burstY;
                                             b.vx -= burstX; b.vy -= burstY;
-
-                                            let angle = Math.random() * Math.PI * 2;
-                                            let speed = 15 + Math.random() * 10;
+                                            let angle = Math.random() * Math.PI * 2, speed = 15 + Math.random() * 10;
                                             photons.push({
                                                 x: (a.x + b.x) / 2, y: (a.y + b.y) / 2,
                                                 vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
@@ -1150,9 +1241,7 @@
                                             });
                                         }
                                     } else {
-                                        let attractProb = 0.0;
-                                        let forceMag = 1.0;
-
+                                        let attractProb = 0.0, forceMag = 1.0;
                                         if (a.type === 'red' && b.type === 'black') { attractProb = 1.0; forceMag = 1.5; }
                                         else if (a.type === 'black' && b.type === 'red') { attractProb = 1.0; forceMag = 1.5; }
                                         else if (a.type === 'black' && b.type === 'black') { attractProb = 0.9; forceMag = 0.5; }
@@ -1165,8 +1254,7 @@
                                             let isAttracting = Math.random() < attractProb;
                                             let direction = isAttracting ? 1.0 : -1.0;
                                             let force = forceMag * direction * (1.0 - dist / interactionRadius);
-                                            fx -= (rx / dist) * force;
-                                            fy -= (ry / dist) * force;
+                                            fx -= (rx / dist) * force; fy -= (ry / dist) * force;
                                         }
                                     }
                                 }
@@ -1174,27 +1262,22 @@
                         }
                     }
                 }
-                a.vx += fx; 
-                a.vy += fy;
+                a.vx += fx; a.vy += fy;
             }
 
-            for (let i = 0; i < total; i++) {
-                particlePool[i].density = Math.min(1.0, particlePool[i].density / 10.0);
-            }
+            for (let i = 0; i < total; i++) particlePool[i].density = Math.min(1.0, particlePool[i].density / 10.0);
 
             const criticalRadiusSq = 55 * 55;
             for (let i = 0; i < total; i++) {
                 let a = particlePool[i];
                 if (a.type === 'white') continue;
                 let localCount = 0;
-
-                const cx = Math.floor(a.x / CELL_SIZE);
-                const cy = Math.floor(a.y / CELL_SIZE);
+                let neighbors = [];
+                const cx = Math.floor(a.x / CELL_SIZE), cy = Math.floor(a.y / CELL_SIZE);
 
                 for (let dx = -1; dx <= 1; dx++) {
                     for (let dy = -1; dy <= 1; dy++) {
-                        const nx = cx + dx;
-                        const ny = cy + dy;
+                        const nx = cx + dx, ny = cy + dy;
                         const key = (nx & 0xFFFF) | ((ny & 0xFFFF) << 16);
                         const cell = grid.get(key);
 
@@ -1202,23 +1285,53 @@
                             const cellSizeLength = cell.length;
                             for (let k = 0; k < cellSizeLength; k++) {
                                 const b = cell[k];
-                                if (b.type === 'white') continue;
-                                if (a === b) continue;
-
-                                let rx = a.x - b.x;
-                                let ry = a.y - b.y;
-                                if ((rx*rx + ry*ry) < criticalRadiusSq) localCount++;
+                                if (b.type === 'white' || a === b) continue;
+                                let rx = a.x - b.x, ry = a.y - b.y;
+                                if ((rx*rx + ry*ry) < criticalRadiusSq) {
+                                    localCount++;
+                                    neighbors.push(b);
+                                }
                             }
                         }
                     }
                 }
 
-                if (localCount > 25) {
-                    a.vx += (Math.random() - 0.5) * 80;
-                    a.vy += (Math.random() - 0.5) * 80;
-                    if (Math.random() < 0.15 && photons.length < 350) {
-                        let angle = Math.random() * Math.PI * 2;
-                        let speed = 20 + Math.random() * 15;
+                // Fission Mechanics: Critical Mass Explosion
+                if (localCount > 35) {
+                    // Massive kinetic explosion for the particle
+                    a.vx += (Math.random() - 0.5) * 180;
+                    a.vy += (Math.random() - 0.5) * 180;
+
+                    // Radial blast force on surrounding clumped particles
+                    for (let n of neighbors) {
+                        let rx = n.x - a.x;
+                        let ry = n.y - a.y;
+                        let distSq = rx * rx + ry * ry;
+                        if (distSq > 0) {
+                            let dist = Math.sqrt(distSq);
+                            let force = 300.0 / Math.max(1.0, dist);
+                            n.vx += (rx / dist) * force;
+                            n.vy += (ry / dist) * force;
+                        }
+                    }
+
+                    // Massive burst of photons out of the blast
+                    for (let p = 0; p < 8; p++) {
+                        if (photons.length < MAX_EXPECTED_PHOTONS) {
+                            let angle = Math.random() * Math.PI * 2, speed = 30 + Math.random() * 40;
+                            photons.push({
+                                x: a.x, y: a.y,
+                                vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
+                                life: 1.0, decay: 0.015, history: []
+                            });
+                        }
+                    }
+                } 
+                // Boiling effect (Pre-fission instability / smaller atoms)
+                else if (localCount > 20) {
+                    a.vx += (Math.random() - 0.5) * 50; a.vy += (Math.random() - 0.5) * 50;
+                    if (Math.random() < 0.1 && photons.length < 350) {
+                        let angle = Math.random() * Math.PI * 2, speed = 20 + Math.random() * 15;
                         photons.push({
                             x: a.x, y: a.y,
                             vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
@@ -1228,24 +1341,29 @@
                 }
             }
 
-            for (let i = 0; i < total; i++) {
-                let p = particlePool[i];
-                p.vx += (Math.random() - 0.5) * 18.0;
-                p.vy += (Math.random() - 0.5) * 18.0;
-                p.x += p.vx; p.y += p.vy;
-                p.vx *= 0.88; 
-                p.vy *= 0.88;
+const THERMAL_JITTER = 18.0;
+const VELOCITY_DAMPING = 0.77;
 
-                p.history.push({ x: p.x, y: p.y, vx: p.vx, vy: p.vy });
-                if (p.history.length > MAX_TRAIL_LENGTH) p.history.shift();
-            }
+for (let i = 0; i < total; i++) {
+    let p = particlePool[i];
 
+    p.vx += (Math.random() - 0.5) * THERMAL_JITTER;
+    p.vy += (Math.random() - 0.5) * THERMAL_JITTER;
+
+    p.x += p.vx;
+    p.y += p.vy;
+
+    p.vx *= VELOCITY_DAMPING;
+    p.vy *= VELOCITY_DAMPING;
+
+    p.history.push({ x: p.x, y: p.y, vx: p.vx, vy: p.vy });
+    if (p.history.length > MAX_TRAIL_LENGTH) p.history.shift();
+}
             for (let i = photons.length - 1; i >= 0; i--) {
                 let p = photons[i];
                 p.x += p.vx; p.y += p.vy;
                 p.life -= p.decay;
-                p.vx *= 0.96; 
-                p.vy *= 0.96;
+                p.vx *= 0.96; p.vy *= 0.96;
                 p.history.push({ x: p.x, y: p.y, vx: p.vx, vy: p.vy });
                 if (p.history.length > 16) p.history.shift();
                 if (p.life <= 0) photons.splice(i, 1);
@@ -1255,9 +1373,7 @@
         function updateStabilityMetric() {
             const total = particlePool.length;
             if (total === 0) return;
-
-            let totalSpeed = 0;
-            let freeNeutrons = 0;
+            let totalSpeed = 0, freeNeutrons = 0;
 
             for (let i = 0; i < total; i++) {
                 const p = particlePool[i];
@@ -1266,17 +1382,10 @@
             }
 
             const avgSpeed = totalSpeed / total;
-            const activePhotons = photons.length;
-
             let stability = 100.0;
-            
-            stability -= Math.min(20.0, (activePhotons / 350.0) * 20.0); 
+            stability -= Math.min(20.0, (photons.length / 350.0) * 20.0); 
             stability -= (freeNeutrons / total) * 80.0; 
-
-            if (avgSpeed > 10.0) {
-                stability -= (avgSpeed - 10.0) * 3.0; 
-            }
-
+            if (avgSpeed > 10.0) stability -= (avgSpeed - 10.0) * 3.0; 
             stability = Math.max(0.0, Math.min(100.0, stability));
 
             stabilityValue.textContent = stability.toFixed(1) + '%';
@@ -1301,19 +1410,18 @@
             }
         }
 
-        // --- Render WebGL Loop ---
+        // --- STREAMING_CHUNK:Rendering WebGL Scene and New Tail Styles ---
         function drawScene() {
             gl.clearColor(0.0, 0.0, 0.0, 1.0);
             gl.clear(gl.COLOR_BUFFER_BIT);
 
             gl.enable(gl.BLEND);
-            gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+            gl.blendFunc(gl.SRC_ALPHA, gl.ONE); // Additive blending for glows
 
             gl.useProgram(gridProgram);
             gl.uniform2f(gridResolutionLoc, width, height);
             gl.uniform2f(gridCameraPosLoc, camera.x, camera.y);
             gl.uniform1f(gridCameraZoomLoc, camera.zoom);
-
             gl.bindBuffer(gl.ARRAY_BUFFER, gridBuffer);
             gl.enableVertexAttribArray(gridPositionLoc);
             gl.vertexAttribPointer(gridPositionLoc, 2, gl.FLOAT, false, 0, 0);
@@ -1324,7 +1432,6 @@
             gl.uniform2f(cameraPosLoc, camera.x, camera.y);
             gl.uniform1f(cameraZoomLoc, camera.zoom);
             gl.uniform1i(colorModeLoc, colorMode);
-
             gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
 
             beginVertexFrame();
@@ -1343,74 +1450,60 @@
                 }
                 
                 renderedCount++;
-
-                let typeVal = 0.0; 
-                if (p.type === 'white') typeVal = 1.0; 
-                else if (p.type === 'black') typeVal = 2.0; 
+                let typeVal = (p.type === 'white') ? 1.0 : (p.type === 'black') ? 2.0 : 0.0; 
 
                 const len = p.history.length;
                 for (let h = 0; h < len; h++) {
                     let pct = (h + 1) / len;
-                    let fade = Math.pow(pct, 2.0); 
-                    let taper = 0.3 + 0.7 * pct;
+                    
+                    // Improved Tails Math
+                    let fade = Math.pow(pct, 1.5); 
+                    let taper = Math.pow(pct, 1.5) * 1.5; // Tapers off more dramatically and smoothly
                     
                     let histPt = p.history[h];
                     let speed = Math.sqrt(histPt.vx * histPt.vx + histPt.vy * histPt.vy);
                     let entropy = Math.min(1.0, speed / 40.0);
 
-                    pushVertex(histPt.x, histPt.y, p.r, p.g, p.b, fade * 0.15, p.radius * 2.2 * taper, typeVal, p.density, entropy);
-                    pushVertex(histPt.x, histPt.y, p.r * 1.2, p.g * 1.2, p.b * 1.2, fade * 0.8, p.radius * 0.9 * taper, typeVal, p.density, entropy);
+                    // Outer Glow: wide, very transparent
+                    pushVertex(histPt.x, histPt.y, p.r, p.g, p.b, fade * 0.08, p.radius * 2.8 * taper, typeVal, p.density, entropy);
+                    
+                    // Mid Layer: Body of the tail
+                    pushVertex(histPt.x, histPt.y, Math.min(1.0, p.r * 1.2), Math.min(1.0, p.g * 1.2), Math.min(1.0, p.b * 1.2), fade * 0.25, p.radius * 1.4 * taper, typeVal, p.density, entropy);
+
+                    // Inner Core: Sharp, intense
+                    pushVertex(histPt.x, histPt.y, Math.min(1.0, p.r * 1.5), Math.min(1.0, p.g * 1.5), Math.min(1.0, p.b * 1.5), fade * 0.85, p.radius * 0.6 * taper, typeVal, p.density, entropy);
                 }
             });
 
             photons.forEach(p => {
-                if (useCulling) {
-                    if (p.x < minWorldX || p.x > maxWorldX || p.y < minWorldY || p.y > maxWorldY) return;
-                }
-
+                if (useCulling && (p.x < minWorldX || p.x > maxWorldX || p.y < minWorldY || p.y > maxWorldY)) return;
                 renderedCount++;
-
                 const len = p.history.length;
                 for (let h = 0; h < len; h++) {
                     let pct = (h + 1) / len;
-                    let fade = Math.pow(pct, 1.5);
-                    let taper = 0.2 + 0.8 * pct;
+                    let fade = Math.pow(pct, 1.2);
+                    let taper = Math.pow(pct, 1.2) * 1.2;
                     let histPt = p.history[h];
 
-                    pushVertex(histPt.x, histPt.y, 1.0, 0.85, 0.1, p.life * fade * 0.6, 6.0 * taper, 3.0, 1.0, 1.0);
+                    // Outer photon glow
+                    pushVertex(histPt.x, histPt.y, 1.0, 0.85, 0.1, p.life * fade * 0.2, 8.0 * taper, 3.0, 1.0, 1.0);
+                    // Inner photon spark
+                    pushVertex(histPt.x, histPt.y, 1.0, 1.0, 1.0, p.life * fade * 0.9, 3.0 * taper, 3.0, 1.0, 1.0);
                 }
             });
 
             if (vertexCount > 0) {
-                gl.bufferSubData(
-                    gl.ARRAY_BUFFER,
-                    0,
-                    vertexData.subarray(0, vertexCount * FLOATS_PER_VERTEX)
-                );
+                gl.bufferSubData(gl.ARRAY_BUFFER, 0, vertexData.subarray(0, vertexCount * FLOATS_PER_VERTEX));
             }
 
             const stride = FLOATS_PER_VERTEX * 4; 
-            
-            gl.enableVertexAttribArray(positionLoc);
-            gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, stride, 0);
-
-            gl.enableVertexAttribArray(colorLoc);
-            gl.vertexAttribPointer(colorLoc, 3, gl.FLOAT, false, stride, 2 * 4);
-
-            gl.enableVertexAttribArray(alphaLoc);
-            gl.vertexAttribPointer(alphaLoc, 1, gl.FLOAT, false, stride, 5 * 4);
-
-            gl.enableVertexAttribArray(sizeLoc);
-            gl.vertexAttribPointer(sizeLoc, 1, gl.FLOAT, false, stride, 6 * 4);
-
-            gl.enableVertexAttribArray(typeLoc);
-            gl.vertexAttribPointer(typeLoc, 1, gl.FLOAT, false, stride, 7 * 4);
-
-            gl.enableVertexAttribArray(densityLoc);
-            gl.vertexAttribPointer(densityLoc, 1, gl.FLOAT, false, stride, 8 * 4);
-
-            gl.enableVertexAttribArray(entropyLoc);
-            gl.vertexAttribPointer(entropyLoc, 1, gl.FLOAT, false, stride, 9 * 4);
+            gl.enableVertexAttribArray(positionLoc); gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, stride, 0);
+            gl.enableVertexAttribArray(colorLoc); gl.vertexAttribPointer(colorLoc, 3, gl.FLOAT, false, stride, 2 * 4);
+            gl.enableVertexAttribArray(alphaLoc); gl.vertexAttribPointer(alphaLoc, 1, gl.FLOAT, false, stride, 5 * 4);
+            gl.enableVertexAttribArray(sizeLoc); gl.vertexAttribPointer(sizeLoc, 1, gl.FLOAT, false, stride, 6 * 4);
+            gl.enableVertexAttribArray(typeLoc); gl.vertexAttribPointer(typeLoc, 1, gl.FLOAT, false, stride, 7 * 4);
+            gl.enableVertexAttribArray(densityLoc); gl.vertexAttribPointer(densityLoc, 1, gl.FLOAT, false, stride, 8 * 4);
+            gl.enableVertexAttribArray(entropyLoc); gl.vertexAttribPointer(entropyLoc, 1, gl.FLOAT, false, stride, 9 * 4);
 
             gl.drawArrays(gl.POINTS, 0, vertexCount);
         }
@@ -1420,6 +1513,7 @@
         let framesCount = 0;
         let fpsValue = 60;
 
+        // --- STREAMING_CHUNK:Main Engine Loop ---
         function loop(timestamp) {
             if (!isPaused && timeScale > 0.0) {
                 if (historyIndex < historyBuffer.length - 1) {
@@ -1429,13 +1523,23 @@
 
                 timeAccumulator += timeScale;
 
-                while (timeAccumulator >= 1.0) {
+                // FIX: Implemented an iteration limit (max 3 ticks per frame)
+                // This prevents the CPU from falling into a "death spiral" lag
+                // if the physics gets too heavy at high Time Dilate speeds.
+                let iters = 0;
+                while (timeAccumulator >= 1.0 && iters < 3) {
                     updatePhysics();
-
                     physicsTickCounter++;
                     pushHistorySnapshot(false);
                     historyIndex = historyBuffer.length - 1;
                     timeAccumulator -= 1.0;
+                    iters++;
+                }
+
+                // If we hit our max iter safety cap, we discard the remaining accumulated time
+                // to prevent permanent locking. This ensures UI stays responsive.
+                if (timeAccumulator >= 1.0) {
+                    timeAccumulator = 0.0; 
                 }
                 
                 updateTimelineUI();
