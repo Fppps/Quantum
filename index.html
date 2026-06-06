@@ -1341,8 +1341,8 @@
                 }
             }
 
-const THERMAL_JITTER = 18.0;
-const VELOCITY_DAMPING = 0.77;
+const THERMAL_JITTER = 13.5;
+const VELOCITY_RETENTION = 0.80;
 
 for (let i = 0; i < total; i++) {
     let p = particlePool[i];
@@ -1353,8 +1353,8 @@ for (let i = 0; i < total; i++) {
     p.x += p.vx;
     p.y += p.vy;
 
-    p.vx *= VELOCITY_DAMPING;
-    p.vy *= VELOCITY_DAMPING;
+    p.vx *= VELOCITY_RETENTION;
+    p.vy *= VELOCITY_RETENTION;
 
     p.history.push({ x: p.x, y: p.y, vx: p.vx, vy: p.vy });
     if (p.history.length > MAX_TRAIL_LENGTH) p.history.shift();
