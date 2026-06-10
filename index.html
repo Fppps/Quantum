@@ -3,23 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quantum Particle Map</title>
+    <title>Quantum Universe Map</title>
     <style>
         :root {
-            --bg-color: #030303;
-            --header-bg: rgba(18, 18, 22, 0.85);
+            --bg-color: #0c0c0e;
+            --header-bg: rgba(20, 20, 24, 0.85);
             --border-color: rgba(255, 255, 255, 0.08);
             --border-hover: rgba(255, 255, 255, 0.15);
-            --text-main: #f8f8f8;
+            --text-main: #f0f0f4;
             --text-muted: #8a8a93;
-            --accent: #3b82f6;
-            --accent-hover: #60a5fa;
-            --accent-bg: rgba(59, 130, 246, 0.15);
+            --accent: #64748b;
+            --accent-hover: #94a3b8;
+            --accent-bg: rgba(100, 116, 139, 0.15);
             --btn-bg: rgba(255, 255, 255, 0.03);
             --btn-hover: rgba(255, 255, 255, 0.08);
-            --danger: #ef4444;
-            --success: #10b981;
-            --tab-active-border: #3b82f6;
+            --danger: #e17055;
+            --success: #00b894;
+            --tab-active-border: #94a3b8;
         }
 
         body, html {
@@ -43,13 +43,13 @@
             left: 0;
             width: 100%;
             background: var(--header-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border-color);
             z-index: 10;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
             transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -106,13 +106,13 @@
 
         .brand h1 {
             margin: 0;
-            font-size: 1.05rem;
-            font-weight: 600;
+            font-size: 1.1rem;
+            font-weight: 500;
             color: var(--text-main);
-            letter-spacing: -0.01em;
+            letter-spacing: 0.02em;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
         .brand h1::before {
@@ -122,7 +122,6 @@
             height: 8px;
             background: var(--accent);
             border-radius: 50%;
-            box-shadow: 0 0 10px var(--accent);
         }
 
         .telemetry-bar {
@@ -379,7 +378,7 @@
             cursor: pointer;
             -webkit-appearance: none;
             margin-top: -5px;
-            box-shadow: 0 0 0 1px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.4);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
             transition: transform 0.1s;
         }
 
@@ -529,7 +528,7 @@
     <header id="site-header">
         <div class="header-top">
             <div class="brand">
-                <h1>Quantum Particle Map</h1>
+                <h1>Quantum Universe Map</h1>
             </div>
             
             <div class="telemetry-bar">
@@ -567,7 +566,6 @@
                 <!-- Time Pane -->
                 <div id="pane-time" class="tab-pane active">
                     <div class="control-group slider-group">
-                        <!-- Capped max time to 3.0 to prevent physics explosion -->
                         <span class="group-label"><span>Time Dilate</span> <span id="time-value" style="color: var(--text-main);">1.00x</span></span>
                         <input type="range" id="time-slider" min="0.0" max="3.0" step="0.01" value="1.0">
                     </div>
@@ -588,9 +586,10 @@
                     <div class="control-group">
                         <span class="group-label">Draw Mode</span>
                         <div class="btn-group">
-                            <button class="btn-mode active" id="btn-color-quantum">Trails</button>
-                            <button class="btn-mode" id="btn-color-clutter">Clutter</button>
-                            <button class="btn-mode" id="btn-color-entropy">Entropy</button>
+                            <button class="btn-mode active" id="btn-color-waves">Waves</button>
+                            <button class="btn-mode" id="btn-color-density">Density</button>
+                            <button class="btn-mode" id="btn-color-kinetic">Kinetic</button>
+                            <button class="btn-mode" id="btn-color-struct">Structural</button>
                         </div>
                     </div>
 
@@ -629,22 +628,24 @@
 
         <div id="help-modal" class="hidden">
             <div class="help-content">
-                <h2>Welcome to Quantum Particle Map</h2>
+                <h2>Welcome to Quantum Universe Map</h2>
                 <p>This is a hardware-accelerated physics engine calculating continuous probability logic and interactions.</p>
                 <ul>
                     <li><strong>Navigation:</strong> Use your <strong>scroll wheel</strong> to zoom in/out. <strong>Click and drag</strong> to pan around.</li>
                     <li><strong>Time Control:</strong> Use the <em>Time Dilate</em> slider in the <strong>Time & Controls</strong> tab to slow down or speed up logic. Use <em>Timeline Scrub</em> to travel back in time.</li>
+                    <li><strong>Quantum Visuals:</strong> Particles render as mathematical <em>Probability Wave Packets</em>. Due to the Uncertainty Principle, faster particles delocalize (spread out) into wider, softer waves. Overlapping waves create natural interference patterns.</li>
                     <li><strong>The Physics:</strong> 
-                        <br><span class="badge proton-badge">Protons (+)</span> Anchor elements. Attract electrons and neutrons.
-                        <br><span class="badge electron-badge">Electrons (-)</span> Buzz wildly. Attracted to protons, repel electrons.
-                        <br><span class="badge neutron-badge">Neutrons (0)</span> Nuclear glue. Hold structures together.
+                        <br><span class="badge proton-badge">Protons (+)</span> Heavy mass (2.0). Anchor elements. Attract electrons and neutrons.
+                        <br><span class="badge electron-badge">Electrons (-)</span> Tiny mass (0.1). Buzz wildly in high-speed orbits. Attracted to protons, repel electrons.
+                        <br><span class="badge neutron-badge">Neutrons (0)</span> Heaviest mass (2.5). Nuclear glue. Hold structures together via strong force.
                         <br>Watch for <em>Photons</em>—flashes of light emitted during violent clashes!
-                        <br><strong>Critical Mass:</strong> If too many protons and neutrons clump together, the atom becomes unstable and violently undergoes fission!
+                        <br><strong>Critical Mass & Fission:</strong> Gravity and strong-forces pull heavy masses together. If too many protons and neutrons clump, the atom becomes unstable and undergoes violent fission!
                     </li>
                     <li><strong>Draw Modes:</strong> 
-                        <br><em>Trails:</em> Visualizes historic strings.
-                        <br><em>Clutter:</em> Maps out dense areas in thermal color.
-                        <br><em>Entropy:</em> Maps kinetic energy (Cold=purple, Hot=pink).
+                        <br><em>Waves:</em> Smooth, constructive interference logic.
+                        <br><em>Density:</em> Heat map outlining atomic mass structures.
+                        <br><em>Kinetic:</em> Maps kinetic energy (Cold=purple, Hot=pink).
+                        <br><em>Structural:</em> Discards round wave-forms and replaces particles with sharp, precise grid measurement vectors and crosshairs.
                     </li>
                 </ul>
                 <button id="btn-close-help">Continue to Simulation</button>
@@ -712,9 +713,10 @@
         const btnClearHistory = document.getElementById('btn-clear-history');
         const btnBang = document.getElementById('btn-bang');
 
-        const btnColorQuantum = document.getElementById('btn-color-quantum');
-        const btnColorClutter = document.getElementById('btn-color-clutter');
-        const btnColorEntropy = document.getElementById('btn-color-entropy');
+        const btnColorWaves = document.getElementById('btn-color-waves');
+        const btnColorDensity = document.getElementById('btn-color-density');
+        const btnColorKinetic = document.getElementById('btn-color-kinetic');
+        const btnColorStruct = document.getElementById('btn-color-struct');
 
         const stabilityValue = document.getElementById('stability-value');
         const stabilityBar = document.getElementById('stability-bar');
@@ -814,13 +816,22 @@
             out float v_type;
             out float v_density;
             out float v_entropy;
+            out float v_spread;
 
             void main() {
+                // Continuous, smooth positioning
                 vec2 worldPos = a_position + u_camera_pos;
                 vec2 screenPos = worldPos * u_camera_zoom;
                 vec2 clipSpace = screenPos / (u_resolution * 0.5);
                 gl_Position = vec4(clipSpace, 0.0, 1.0);
-                gl_PointSize = a_size * u_camera_zoom;
+                
+                // Quantum Uncertainty Principle: 
+                // Higher kinetic energy (entropy) = higher positional uncertainty (delocalization/spread)
+                float spread = 1.0 + (a_entropy * 3.0);
+                v_spread = spread;
+                
+                // Scale up size to allow the probability waves to overlap and interfere
+                gl_PointSize = (a_size * 2.2 * spread) * u_camera_zoom;
                 
                 v_color = a_color;
                 v_alpha = a_alpha;
@@ -838,60 +849,101 @@
             in float v_type;
             in float v_density;
             in float v_entropy;
+            in float v_spread;
 
             uniform int u_color_mode; 
+            uniform float u_time;
 
             out vec4 outColor;
 
             vec3 getThermalColor(float intensity) {
-                vec3 c1 = vec3(0.01, 0.0, 0.08); 
-                vec3 c2 = vec3(0.0, 0.4, 0.95);  
-                vec3 c3 = vec3(0.0, 0.95, 0.7);  
-                vec3 c4 = vec3(0.95, 0.8, 0.0);  
-                vec3 c5 = vec3(1.0, 1.0, 1.0);   
+                // Smooth, organic color gradients (no neon)
+                vec3 c1 = vec3(0.05, 0.08, 0.15); // Deep slate/blue
+                vec3 c2 = vec3(0.15, 0.30, 0.50); // Muted ocean
+                vec3 c3 = vec3(0.40, 0.40, 0.55); // Soft lavender/gray
+                vec3 c4 = vec3(0.70, 0.60, 0.50); // Warm sand
+                vec3 c5 = vec3(0.95, 0.90, 0.85); // Soft white
 
-                if (intensity < 0.25) return mix(c1, c2, intensity * 4.0);
-                else if (intensity < 0.5) return mix(c2, c3, (intensity - 0.25) * 4.0);
-                else if (intensity < 0.75) return mix(c3, c4, (intensity - 0.5) * 4.0);
-                else return mix(c4, c5, (intensity - 0.75) * 4.0);
+                float t = clamp(intensity, 0.0, 1.0);
+                if (t < 0.25) return mix(c1, c2, t * 4.0);
+                else if (t < 0.5) return mix(c2, c3, (t - 0.25) * 4.0);
+                else if (t < 0.75) return mix(c3, c4, (t - 0.5) * 4.0);
+                else return mix(c4, c5, (t - 0.75) * 4.0);
             }
 
             void main() {
                 vec2 coord = gl_PointCoord - vec2(0.5);
                 float distSq = dot(coord, coord);
+                
+                // --- STRUCTURAL (VECTOR) MEASUREMENT MODE ---
+                if (u_color_mode == 3) {
+                    float thickness = 0.06;
+                    
+                    // Sharp internal tracking crosshair
+                    float crossX = step(abs(coord.x), thickness) * step(abs(coord.y), 0.35);
+                    float crossY = step(abs(coord.y), thickness) * step(abs(coord.x), 0.35);
+                    float cross = max(crossX, crossY);
+                    
+                    // Measurement brackets/nodes on the outer corners
+                    float bracketDist = max(abs(coord.x), abs(coord.y));
+                    float bracket = step(0.35, bracketDist) * step(bracketDist, 0.45);
+                    float cornerMask = step(0.15, min(abs(coord.x), abs(coord.y)));
+                    float brackets = bracket * cornerMask;
+
+                    // Combine shapes
+                    float shape = max(cross, brackets);
+                    
+                    // Discard empty space or outside radius
+                    if (shape == 0.0 || distSq > 0.25) discard;
+                    
+                    vec3 tColor = vec3(0.5, 0.8, 0.7); // Neutral cyan data-point
+                    if (v_type == 1.0) tColor = vec3(0.3, 0.6, 1.0); // Electron blue
+                    if (v_type == 2.0) tColor = vec3(0.9, 0.4, 0.4); // Neutron red
+                    
+                    outColor = vec4(tColor * shape * 2.0, v_alpha * 2.0);
+                    return; // exit early for this mode
+                }
+
+                // --- QUANTUM WAVE PACKET MATH (For all other modes) ---
                 if (distSq > 0.25) discard;
+                float dist = sqrt(distSq) * 2.0; 
+                
+                // 1. Gaussian Envelope (Probability bounds of the wave packet)
+                float envelope = exp(-dist * dist * 4.0 * v_spread) * pow(1.0 - dist, 1.5);
+                
+                // 2. De Broglie Probability Ripples
+                float frequency = 8.0 + (v_entropy * 15.0);
+                float phase = (dist * frequency) - (u_time * 4.0);
+                float probRipple = pow(cos(phase), 2.0) * 0.6 + 0.4; 
+                
+                // 3. Combined Wavefunction Amplitude
+                float waveAmp = (envelope * probRipple) / (1.0 + v_spread * 0.5);
 
                 vec3 waveSpectrum = vec3(0.0);
                 
                 if (u_color_mode == 2) {
-                    float waveAmp = exp(-distSq * 10.0); 
+                    float e = clamp(v_entropy, 0.0, 1.0);
                     
-                    // Enhanced high-energy palette for entropy
-                    vec3 e1 = vec3(0.02, 0.0, 0.1);    // Void / cold
-                    vec3 e2 = vec3(0.3, 0.0, 0.8);     // Deep purple
-                    vec3 e3 = vec3(1.0, 0.0, 0.5);     // Neon pink
-                    vec3 e4 = vec3(0.0, 1.0, 1.0);     // Intense cyan
-                    vec3 e5 = vec3(1.0, 1.0, 1.0);     // Superheated white
+                    vec3 e1 = vec3(0.08, 0.10, 0.15); // Cold space
+                    vec3 e2 = vec3(0.20, 0.35, 0.50); // Flowing blue
+                    vec3 e3 = vec3(0.50, 0.55, 0.65); // Neutral transition
+                    vec3 e4 = vec3(0.80, 0.65, 0.50); // Heated gold
+                    vec3 e5 = vec3(1.00, 0.95, 0.90); // Peak energy
 
-                    if (v_entropy < 0.25) waveSpectrum = mix(e1, e2, v_entropy * 4.0);
-                    else if (v_entropy < 0.5) waveSpectrum = mix(e2, e3, (v_entropy - 0.25) * 4.0);
-                    else if (v_entropy < 0.75) waveSpectrum = mix(e3, e4, (v_entropy - 0.5) * 4.0);
-                    else waveSpectrum = mix(e4, e5, (v_entropy - 0.75) * 4.0);
+                    if (e < 0.25) waveSpectrum = mix(e1, e2, e * 4.0);
+                    else if (e < 0.5) waveSpectrum = mix(e2, e3, (e - 0.25) * 4.0);
+                    else if (e < 0.75) waveSpectrum = mix(e3, e4, (e - 0.5) * 4.0);
+                    else waveSpectrum = mix(e4, e5, (e - 0.75) * 4.0);
                     
-                    // Hotter particles glow significantly brighter
-                    float glowBoost = 1.0 + (v_entropy * 2.5); 
-                    outColor = vec4(waveSpectrum * waveAmp * 1.5 * glowBoost, waveAmp * v_alpha * glowBoost);
+                    outColor = vec4(waveSpectrum * waveAmp * 2.0, waveAmp * v_alpha);
 
                 } else {
-                    float waveAmp = exp(-distSq * 12.0); // Slightly sharper center dropoff
-                    
                     if (u_color_mode == 1) {
-                        waveSpectrum = getThermalColor(v_density * waveAmp);
+                        waveSpectrum = getThermalColor(v_density);
                     } else {
-                        // Color overrides based on v_color provided by JS
                         waveSpectrum = v_color.rgb;
                     }
-                    outColor = vec4(waveSpectrum * waveAmp, waveAmp * v_alpha);
+                    outColor = vec4(waveSpectrum * waveAmp * 1.5, waveAmp * v_alpha);
                 }
             }
         `;
@@ -928,6 +980,7 @@
         const cameraPosLoc = gl.getUniformLocation(program, 'u_camera_pos');
         const cameraZoomLoc = gl.getUniformLocation(program, 'u_camera_zoom');
         const colorModeLoc = gl.getUniformLocation(program, 'u_color_mode');
+        const timeLoc = gl.getUniformLocation(program, 'u_time'); // Added Uniform
 
         const buffer = gl.createBuffer();
 
@@ -956,24 +1009,55 @@
         }
 
         // --- STREAMING_CHUNK:Grid Shaders and Logic ---
+        // NEW: Replaced basic lines with a full screen measurement grid quad
         const gridVsSource = `#version 300 es
             in vec2 a_position;
-            uniform vec2 u_resolution;
-            uniform vec2 u_camera_pos;
-            uniform float u_camera_zoom;
             void main() {
-                vec2 worldPos = a_position + u_camera_pos;
-                vec2 clipSpace = (worldPos * u_camera_zoom) / (u_resolution * 0.5);
-                gl_Position = vec4(clipSpace, 0.0, 1.0);
+                gl_Position = vec4(a_position, 0.0, 1.0);
             }
         `;
         const gridFsSource = `#version 300 es
             precision highp float;
+            uniform vec2 u_resolution;
+            uniform vec2 u_camera_pos;
             uniform float u_camera_zoom;
             out vec4 outColor;
+
             void main() {
-                float alpha = clamp(0.04 * (u_camera_zoom + 0.15), 0.005, 0.04);
-                outColor = vec4(1.0, 1.0, 1.0, alpha);
+                vec2 fragCoord = gl_FragCoord.xy;
+                
+                // Convert pixel coordinates to simulated world coordinates
+                vec2 screenPos = fragCoord - u_resolution * 0.5;
+                vec2 worldPos = (screenPos / u_camera_zoom) - u_camera_pos;
+                
+                float gridSize = 100.0;
+                
+                // Minor grid lines
+                vec2 gridUV = fract(worldPos / gridSize);
+                vec2 pxSize = vec2(1.0) / (gridSize * u_camera_zoom);
+                vec2 lines = smoothstep(pxSize * 1.5, pxSize * 0.5, gridUV) + smoothstep(1.0 - pxSize * 1.5, 1.0 - pxSize * 0.5, gridUV);
+                float isLine = clamp(lines.x + lines.y, 0.0, 1.0);
+                
+                // Major grid lines (every 5th line)
+                vec2 majorUV = fract(worldPos / (gridSize * 5.0));
+                vec2 majorPx = pxSize * 5.0; 
+                vec2 majorLines = smoothstep(majorPx * 1.5, majorPx * 0.5, majorUV) + smoothstep(1.0 - majorPx * 1.5, 1.0 - majorPx * 0.5, majorUV);
+                float isMajor = clamp(majorLines.x + majorLines.y, 0.0, 1.0);
+                
+                // Measurement Crosshairs at intersections
+                vec2 crossUV = fract((worldPos / gridSize) + 0.5); 
+                float crossX = smoothstep(0.06, 0.05, abs(crossUV.x - 0.5)) * smoothstep(0.015, 0.0, abs(crossUV.y - 0.5));
+                float crossY = smoothstep(0.06, 0.05, abs(crossUV.y - 0.5)) * smoothstep(0.015, 0.0, abs(crossUV.x - 0.5));
+                float isCross = clamp(crossX + crossY, 0.0, 1.0);
+
+                float alpha = clamp(0.06 * (u_camera_zoom + 0.15), 0.01, 0.15);
+                
+                float intensity = max(isLine * 0.15, isMajor * 0.4);
+                intensity = max(intensity, isCross * 1.0);
+                
+                if (intensity <= 0.0) discard;
+                
+                outColor = vec4(1.0, 1.0, 1.0, intensity * alpha);
             }
         `;
 
@@ -990,13 +1074,16 @@
         const gridCameraZoomLoc = gl.getUniformLocation(gridProgram, 'u_camera_zoom');
 
         const gridBuffer = gl.createBuffer();
-        const gridVertices = [];
-        const gridSize = 100, gridExtents = 6000; 
-        for (let x = -gridExtents; x <= gridExtents; x += gridSize) gridVertices.push(x, -gridExtents, x, gridExtents);
-        for (let y = -gridExtents; y <= gridExtents; y += gridSize) gridVertices.push(-gridExtents, y, gridExtents, y);
+        // A single full-screen quad to handle the fragment shader grid math
+        const gridVertices = new Float32Array([
+            -1.0, -1.0,
+             1.0, -1.0,
+            -1.0,  1.0,
+             1.0,  1.0
+        ]);
 
         gl.bindBuffer(gl.ARRAY_BUFFER, gridBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(gridVertices), gl.STATIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, gridVertices, gl.STATIC_DRAW);
 
         // --- STREAMING_CHUNK:Simulation State and State Management ---
         const particlePool = [];
@@ -1010,14 +1097,48 @@
         let isPaused = false;
         let timeScale = 1.0;
 
-        function createGroup(type, count, r, g, b, radius) {
+        // --- OPTIMIZATION: Flat Array Spatial Hash Grid & Memory Pooling ---
+        // Completely removes the use of dynamic Maps and Arrays during the physics tick
+        // which eliminates CPU-stalling Garbage Collection (GC) pauses.
+        const GRID_SIZE = 8192; // Must be power of 2
+        const HASH_MASK = GRID_SIZE - 1;
+        const gridHead = new Int32Array(GRID_SIZE);
+        const MAX_POSSIBLE_PARTICLES = 15000;
+        const gridNext = new Int32Array(MAX_POSSIBLE_PARTICLES);
+
+        // --- OPTIMIZATION: Pre-calculate expensive math for the render pass ---
+        const FADE_LUT = new Float32Array(MAX_TRAIL_LENGTH);
+        const TAPER_LUT = new Float32Array(MAX_TRAIL_LENGTH);
+        for (let i = 0; i < MAX_TRAIL_LENGTH; i++) {
+            let pct = (i + 1) / MAX_TRAIL_LENGTH;
+            FADE_LUT[i] = Math.pow(pct, 1.5);
+            TAPER_LUT[i] = Math.pow(pct, 1.5) * 1.5;
+        }
+
+        const PHOTON_FADE_LUT = new Float32Array(16);
+        const PHOTON_TAPER_LUT = new Float32Array(16);
+        for (let i = 0; i < 16; i++) {
+            let pct = (i + 1) / 16;
+            PHOTON_FADE_LUT[i] = Math.pow(pct, 1.2);
+            PHOTON_TAPER_LUT[i] = Math.pow(pct, 1.2) * 1.2;
+        }
+
+        function createGroup(type, count, r, g, b, radius, mass) {
             for (let i = 0; i < count; i++) {
                 const angle = Math.random() * Math.PI * 2;
                 const speed = 0.5 + Math.random() * 18.0; 
+                
+                // Pre-allocate history ring buffer to avoid creating arrays every frame
+                const hist = [];
+                for(let h=0; h<MAX_TRAIL_LENGTH; h++) {
+                    hist.push({x: 0, y: 0, vx: 0, vy: 0});
+                }
+
                 particlePool.push({
                     x: 0, y: 0, 
                     vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
-                    type: type, r: r, g: g, b: b, radius: radius, density: 0.0, history: [] 
+                    type: type, r: r, g: g, b: b, radius: radius, mass: mass, density: 0.0, 
+                    history: hist, histIdx: 0, cx: 0, cy: 0 
                 });
             }
         }
@@ -1052,7 +1173,9 @@
             let idx = 2;
 
             while (particlePool.length < numParticles) {
-                particlePool.push({ x: 0, y: 0, vx: 0, vy: 0, type: 'red', r: 1.0, g: 0.2, b: 0.27, radius: 6.0, density: 0.0, history: [] });
+                const hist = [];
+                for(let h=0; h<MAX_TRAIL_LENGTH; h++) hist.push({x:0,y:0,vx:0,vy:0});
+                particlePool.push({ x: 0, y: 0, vx: 0, vy: 0, type: 'red', r: 1.0, g: 0.2, b: 0.27, radius: 6.0, mass: 2.0, density: 0.0, history: hist, histIdx: 0, cx: 0, cy: 0 });
             }
             if (particlePool.length > numParticles) particlePool.length = numParticles;
 
@@ -1061,20 +1184,21 @@
                 p.x = data[idx++]; p.y = data[idx++]; p.vx = data[idx++]; p.vy = data[idx++];
                 const typeId = data[idx++]; p.density = data[idx++];
 
-                if (typeId === 0.0) { p.type = 'red'; p.r = 0.8; p.g = 0.1; p.b = 0.2; p.radius = 6.0; } 
-                else if (typeId === 1.0) { p.type = 'white'; p.r = 0.0; p.g = 0.6; p.b = 1.0; p.radius = 4.0; } 
-                else { p.type = 'black'; p.r = 0.6; p.g = 0.6; p.b = 0.7; p.radius = 8.0; }
+                if (typeId === 0.0) { p.type = 'red'; p.r = 0.8; p.g = 0.1; p.b = 0.2; p.radius = 6.0; p.mass = 2.0; } 
+                else if (typeId === 1.0) { p.type = 'white'; p.r = 0.0; p.g = 0.6; p.b = 1.0; p.radius = 4.0; p.mass = 0.1; } 
+                else { p.type = 'black'; p.r = 0.6; p.g = 0.6; p.b = 0.7; p.radius = 8.0; p.mass = 2.5; }
 
-                if (p.history.length === 0) {
-                    for (let h = 0; h < MAX_TRAIL_LENGTH; h++) p.history.push({ x: p.x, y: p.y, vx: p.vx, vy: p.vy });
-                } else {
-                    p.history.push({ x: p.x, y: p.y, vx: p.vx, vy: p.vy });
-                    if (p.history.length > MAX_TRAIL_LENGTH) p.history.shift();
+                for (let h = 0; h < MAX_TRAIL_LENGTH; h++) {
+                    p.history[h].x = p.x; p.history[h].y = p.y; 
+                    p.history[h].vx = p.vx; p.history[h].vy = p.vy;
                 }
+                p.histIdx = 0;
             }
 
             while (photons.length < numPhotons) {
-                photons.push({ x: 0, y: 0, vx: 0, vy: 0, life: 1.0, decay: 0.02, history: [] });
+                const pHist = [];
+                for(let h=0; h<16; h++) pHist.push({x:0,y:0,vx:0,vy:0});
+                photons.push({ x: 0, y: 0, vx: 0, vy: 0, life: 1.0, decay: 0.02, history: pHist, histIdx: 0 });
             }
             if (photons.length > numPhotons) photons.length = numPhotons;
 
@@ -1083,12 +1207,11 @@
                 p.x = data[idx++]; p.y = data[idx++]; p.vx = data[idx++]; p.vy = data[idx++]; p.life = data[idx++];
                 p.decay = 0.02;
 
-                if (p.history.length === 0) {
-                    for (let h = 0; h < 16; h++) p.history.push({ x: p.x, y: p.y, vx: p.vx, vy: p.vy });
-                } else {
-                    p.history.push({ x: p.x, y: p.y, vx: p.vx, vy: p.vy });
-                    if (p.history.length > 16) p.history.shift();
+                for (let h = 0; h < 16; h++) {
+                    p.history[h].x = p.x; p.history[h].y = p.y;
+                    p.history[h].vx = p.vx; p.history[h].vy = p.vy;
                 }
+                p.histIdx = 0;
             }
         }
 
@@ -1108,9 +1231,9 @@
 
             const baseCount = parseInt(countSlider.value);
             // Modified base colors slightly for better blending
-            createGroup('red', Math.floor(baseCount * 0.85), 0.8, 0.1, 0.2, 6.0);    
-            createGroup('white', baseCount, 0.0, 0.6, 1.0, 4.0);                       
-            createGroup('black', Math.floor(baseCount * 0.7), 0.6, 0.6, 0.7, 8.0);   
+            createGroup('red', Math.floor(baseCount * 0.85), 0.8, 0.1, 0.2, 6.0, 2.0);    
+            createGroup('white', baseCount, 0.0, 0.6, 1.0, 4.0, 0.1);                       
+            createGroup('black', Math.floor(baseCount * 0.7), 0.6, 0.6, 0.7, 8.0, 2.5);   
 
             pushHistorySnapshot(true);
             historyIndex = 0;
@@ -1133,12 +1256,13 @@
             timeValueDisplay.textContent = timeScale.toFixed(2) + 'x';
         });
 
-        btnColorQuantum.addEventListener('click', () => { colorMode = 0; updateDrawModes(btnColorQuantum); });
-        btnColorClutter.addEventListener('click', () => { colorMode = 1; updateDrawModes(btnColorClutter); });
-        btnColorEntropy.addEventListener('click', () => { colorMode = 2; updateDrawModes(btnColorEntropy); });
+        btnColorWaves.addEventListener('click', () => { colorMode = 0; updateDrawModes(btnColorWaves); });
+        btnColorDensity.addEventListener('click', () => { colorMode = 1; updateDrawModes(btnColorDensity); });
+        btnColorKinetic.addEventListener('click', () => { colorMode = 2; updateDrawModes(btnColorKinetic); });
+        btnColorStruct.addEventListener('click', () => { colorMode = 3; updateDrawModes(btnColorStruct); });
 
         function updateDrawModes(activeBtn) {
-            [btnColorQuantum, btnColorClutter, btnColorEntropy].forEach(b => b.classList.remove('active'));
+            [btnColorWaves, btnColorDensity, btnColorKinetic, btnColorStruct].forEach(b => b.classList.remove('active'));
             activeBtn.classList.add('active');
         }
 
@@ -1187,15 +1311,16 @@
             const total = particlePool.length;
             for (let i = 0; i < total; i++) particlePool[i].density = 0.0;
             
-            const grid = new Map();
+            // Re-map the flat-array Spatial Hash Grid for high speed neighbor checks
+            gridHead.fill(-1);
             for (let i = 0; i < total; i++) {
                 const p = particlePool[i];
-                const cx = Math.floor(p.x / CELL_SIZE);
-                const cy = Math.floor(p.y / CELL_SIZE);
-                const key = (cx & 0xFFFF) | ((cy & 0xFFFF) << 16); 
-                let cell = grid.get(key);
-                if (!cell) { cell = []; grid.set(key, cell); }
-                cell.push(p);
+                p.cx = Math.floor(p.x / CELL_SIZE);
+                p.cy = Math.floor(p.y / CELL_SIZE);
+                
+                const hash = ((p.cx * 73856093) ^ (p.cy * 19349663)) & HASH_MASK; 
+                gridNext[i] = gridHead[hash];
+                gridHead[hash] = i;
             }
 
             const interactionRadius = 180, interactionRadiusSq = interactionRadius * interactionRadius;
@@ -1204,65 +1329,74 @@
             for (let i = 0; i < total; i++) {
                 let a = particlePool[i];
                 let fx = 0, fy = 0;
-                const cx = Math.floor(a.x / CELL_SIZE), cy = Math.floor(a.y / CELL_SIZE);
 
                 for (let dx = -1; dx <= 1; dx++) {
                     for (let dy = -1; dy <= 1; dy++) {
-                        const nx = cx + dx, ny = cy + dy;
-                        const key = (nx & 0xFFFF) | ((ny & 0xFFFF) << 16);
-                        const cell = grid.get(key);
+                        const nx = a.cx + dx, ny = a.cy + dy;
+                        const hash = ((nx * 73856093) ^ (ny * 19349663)) & HASH_MASK;
+                        
+                        let bIdx = gridHead[hash];
+                        while (bIdx !== -1) {
+                            if (i !== bIdx) { // a !== b
+                                const b = particlePool[bIdx];
+                                
+                                // Verify hash collision boundary
+                                if (b.cx === nx && b.cy === ny) {
+                                    let rx = a.x - b.x, ry = a.y - b.y;
+                                    let distSq = rx * rx + ry * ry;
 
-                        if (cell) {
-                            const cellSizeLength = cell.length;
-                            for (let k = 0; k < cellSizeLength; k++) {
-                                const b = cell[k];
-                                if (a === b) continue;
+                                    if (distSq > 0 && distSq < interactionRadiusSq) {
+                                        let dist = Math.sqrt(distSq);
+                                        a.density += (1.0 - dist / interactionRadius);
 
-                                let rx = a.x - b.x, ry = a.y - b.y;
-                                let distSq = rx * rx + ry * ry;
+                                        if (dist < closeRepelRadius) {
+                                            let repel = 15.0 * (1.0 - dist / closeRepelRadius);
+                                            fx += (rx / dist) * repel; fy += (ry / dist) * repel;
 
-                                if (distSq > 0 && distSq < interactionRadiusSq) {
-                                    let dist = Math.sqrt(distSq);
-                                    a.density += (1.0 - dist / interactionRadius);
-
-                                    if (dist < closeRepelRadius) {
-                                        let repel = 5.0 * (1.0 - dist / closeRepelRadius);
-                                        fx += (rx / dist) * repel; fy += (ry / dist) * repel;
-
-                                        if (Math.random() < 0.001 && photons.length < 350) {
-                                            let burstX = (Math.random() - 0.5) * 45, burstY = (Math.random() - 0.5) * 45;
-                                            a.vx += burstX; a.vy += burstY;
-                                            b.vx -= burstX; b.vy -= burstY;
-                                            let angle = Math.random() * Math.PI * 2, speed = 15 + Math.random() * 10;
-                                            photons.push({
-                                                x: (a.x + b.x) / 2, y: (a.y + b.y) / 2,
-                                                vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
-                                                life: 1.0, decay: 0.02, history: []
-                                            });
-                                        }
-                                    } else {
-                                        let attractProb = 0.0, forceMag = 1.0;
-                                        if (a.type === 'red' && b.type === 'black') { attractProb = 1.0; forceMag = 1.5; }
-                                        else if (a.type === 'black' && b.type === 'red') { attractProb = 1.0; forceMag = 1.5; }
-                                        else if (a.type === 'black' && b.type === 'black') { attractProb = 0.9; forceMag = 0.5; }
-                                        else if (a.type === 'red' && b.type === 'white') { attractProb = 0.95; forceMag = 0.8; }
-                                        else if (a.type === 'white' && b.type === 'red') { attractProb = 0.95; forceMag = 0.8; }
-                                        else if (a.type === 'white' && b.type === 'white') { attractProb = 0.0; forceMag = 0.4; }
-                                        else if (a.type === 'red' && b.type === 'red') { attractProb = 0.0; forceMag = 1.0; }
-
-                                        if (forceMag > 0.0) {
-                                            let isAttracting = Math.random() < attractProb;
-                                            let direction = isAttracting ? 1.0 : -1.0;
-                                            let force = forceMag * direction * (1.0 - dist / interactionRadius);
-                                            fx -= (rx / dist) * force; fy -= (ry / dist) * force;
+                                            if (Math.random() < 0.001 && photons.length < 350) {
+                                                let burstX = (Math.random() - 0.5) * 45, burstY = (Math.random() - 0.5) * 45;
+                                                a.vx += burstX / a.mass; a.vy += burstY / a.mass;
+                                                b.vx -= burstX / b.mass; b.vy -= burstY / b.mass;
+                                                let angle = Math.random() * Math.PI * 2, speed = 15 + Math.random() * 10;
+                                                
+                                                const pHist = [];
+                                                for(let h=0; h<16; h++) pHist.push({x: (a.x+b.x)/2, y: (a.y+b.y)/2, vx:0, vy:0});
+                                                photons.push({
+                                                    x: (a.x + b.x) / 2, y: (a.y + b.y) / 2,
+                                                    vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
+                                                    life: 1.0, decay: 0.02, history: pHist, histIdx: 0
+                                                });
+                                            }
+                                        } else {
+                                            let forceMag = 0.0;
+                                            
+                                            // Continuous Mass-based Forces (Strong Nuclear & Electromagnetic)
+                                            if (a.type === 'red' && b.type === 'black') forceMag = 28.0; // Strong nuclear attract
+                                            else if (a.type === 'black' && b.type === 'red') forceMag = 28.0;
+                                            else if (a.type === 'black' && b.type === 'black') forceMag = 18.0; // Mild nuclear glue
+                                            else if (a.type === 'red' && b.type === 'white') forceMag = 5.0; // EM attract
+                                            else if (a.type === 'white' && b.type === 'red') forceMag = 5.0; 
+                                            else if (a.type === 'white' && b.type === 'white') forceMag = -2.0; // EM repel
+                                            else if (a.type === 'red' && b.type === 'red') forceMag = -18.0; // Strong EM repel
+                                            
+                                            // Universal Gravitational Pull (scales with combined mass)
+                                            let gravity = (a.mass * b.mass) * 1.5; 
+                                            
+                                            let totalForce = (forceMag + gravity) * (1.0 - dist / interactionRadius);
+                                            
+                                            fx -= (rx / dist) * totalForce;
+                                            fy -= (ry / dist) * totalForce;
                                         }
                                     }
                                 }
                             }
+                            bIdx = gridNext[bIdx];
                         }
                     }
                 }
-                a.vx += fx; a.vy += fy;
+                // F = M * A  -->  A = F / M
+                a.vx += fx / a.mass; 
+                a.vy += fy / a.mass;
             }
 
             for (let i = 0; i < total; i++) particlePool[i].density = Math.min(1.0, particlePool[i].density / 10.0);
@@ -1273,25 +1407,25 @@
                 if (a.type === 'white') continue;
                 let localCount = 0;
                 let neighbors = [];
-                const cx = Math.floor(a.x / CELL_SIZE), cy = Math.floor(a.y / CELL_SIZE);
 
                 for (let dx = -1; dx <= 1; dx++) {
                     for (let dy = -1; dy <= 1; dy++) {
-                        const nx = cx + dx, ny = cy + dy;
-                        const key = (nx & 0xFFFF) | ((ny & 0xFFFF) << 16);
-                        const cell = grid.get(key);
-
-                        if (cell) {
-                            const cellSizeLength = cell.length;
-                            for (let k = 0; k < cellSizeLength; k++) {
-                                const b = cell[k];
-                                if (b.type === 'white' || a === b) continue;
-                                let rx = a.x - b.x, ry = a.y - b.y;
-                                if ((rx*rx + ry*ry) < criticalRadiusSq) {
-                                    localCount++;
-                                    neighbors.push(b);
+                        const nx = a.cx + dx, ny = a.cy + dy;
+                        const hash = ((nx * 73856093) ^ (ny * 19349663)) & HASH_MASK;
+                        
+                        let bIdx = gridHead[hash];
+                        while (bIdx !== -1) {
+                            if (i !== bIdx) {
+                                const b = particlePool[bIdx];
+                                if (b.cx === nx && b.cy === ny && b.type !== 'white') {
+                                    let rx = a.x - b.x, ry = a.y - b.y;
+                                    if ((rx*rx + ry*ry) < criticalRadiusSq) {
+                                        localCount++;
+                                        neighbors.push(b);
+                                    }
                                 }
                             }
+                            bIdx = gridNext[bIdx];
                         }
                     }
                 }
@@ -1319,10 +1453,12 @@
                     for (let p = 0; p < 8; p++) {
                         if (photons.length < MAX_EXPECTED_PHOTONS) {
                             let angle = Math.random() * Math.PI * 2, speed = 30 + Math.random() * 40;
+                            const pHist = [];
+                            for(let h=0; h<16; h++) pHist.push({x: a.x, y: a.y, vx:0, vy:0});
                             photons.push({
                                 x: a.x, y: a.y,
                                 vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
-                                life: 1.0, decay: 0.015, history: []
+                                life: 1.0, decay: 0.015, history: pHist, histIdx: 0
                             });
                         }
                     }
@@ -1332,40 +1468,60 @@
                     a.vx += (Math.random() - 0.5) * 50; a.vy += (Math.random() - 0.5) * 50;
                     if (Math.random() < 0.1 && photons.length < 350) {
                         let angle = Math.random() * Math.PI * 2, speed = 20 + Math.random() * 15;
+                        const pHist = [];
+                        for(let h=0; h<16; h++) pHist.push({x: a.x, y: a.y, vx:0, vy:0});
                         photons.push({
                             x: a.x, y: a.y,
                             vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
-                            life: 1.0, decay: 0.02, history: []
+                            life: 1.0, decay: 0.02, history: pHist, histIdx: 0
                         });
                     }
                 }
             }
 
-const THERMAL_JITTER = 13.5;
-const VELOCITY_RETENTION = 0.80;
+            for (let i = 0; i < total; i++) {
+                let p = particlePool[i];
 
-for (let i = 0; i < total; i++) {
-    let p = particlePool[i];
+                // Thermal Jitter is inversely proportional to mass (heavy objects shake less)
+                let jitter = 15.0 / p.mass;
+                p.vx += (Math.random() - 0.5) * jitter;
+                p.vy += (Math.random() - 0.5) * jitter;
 
-    p.vx += (Math.random() - 0.5) * THERMAL_JITTER;
-    p.vy += (Math.random() - 0.5) * THERMAL_JITTER;
+                p.x += p.vx;
+                p.y += p.vy;
 
-    p.x += p.vx;
-    p.y += p.vy;
+                // Mass-dependent friction: Electrons keep speed to orbit, heavy nuclei stick together via "aether drag"
+                let drag = p.type === 'white' ? 0.96 : 0.76;
+                p.vx *= drag;
+                p.vy *= drag;
 
-    p.vx *= VELOCITY_RETENTION;
-    p.vy *= VELOCITY_RETENTION;
+                // Terminal velocity limits to prevent simulation explosion
+                const maxSpeed = p.type === 'white' ? 140.0 : 50.0;
+                const speedSq = p.vx*p.vx + p.vy*p.vy;
+                if(speedSq > maxSpeed*maxSpeed) {
+                    const speed = Math.sqrt(speedSq);
+                    p.vx = (p.vx / speed) * maxSpeed;
+                    p.vy = (p.vy / speed) * maxSpeed;
+                }
 
-    p.history.push({ x: p.x, y: p.y, vx: p.vx, vy: p.vy });
-    if (p.history.length > MAX_TRAIL_LENGTH) p.history.shift();
-}
+                // Write to ring buffer for historic trails (zero allocations!)
+                let hIdx = p.histIdx;
+                let h = p.history[hIdx];
+                h.x = p.x; h.y = p.y; h.vx = p.vx; h.vy = p.vy;
+                p.histIdx = (hIdx + 1) % MAX_TRAIL_LENGTH;
+            }
+
             for (let i = photons.length - 1; i >= 0; i--) {
                 let p = photons[i];
                 p.x += p.vx; p.y += p.vy;
                 p.life -= p.decay;
                 p.vx *= 0.96; p.vy *= 0.96;
-                p.history.push({ x: p.x, y: p.y, vx: p.vx, vy: p.vy });
-                if (p.history.length > 16) p.history.shift();
+                
+                let hIdx = p.histIdx;
+                let h = p.history[hIdx];
+                h.x = p.x; h.y = p.y; h.vx = p.vx; h.vy = p.vy;
+                p.histIdx = (hIdx + 1) % 16;
+
                 if (p.life <= 0) photons.splice(i, 1);
             }
         }
@@ -1425,13 +1581,16 @@ for (let i = 0; i < total; i++) {
             gl.bindBuffer(gl.ARRAY_BUFFER, gridBuffer);
             gl.enableVertexAttribArray(gridPositionLoc);
             gl.vertexAttribPointer(gridPositionLoc, 2, gl.FLOAT, false, 0, 0);
-            gl.drawArrays(gl.LINES, 0, gridVertices.length / 2);
+            // Render the full screen quad for the background measurement grid
+            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 
             gl.useProgram(program);
             gl.uniform2f(resolutionLoc, width, height);
             gl.uniform2f(cameraPosLoc, camera.x, camera.y);
             gl.uniform1f(cameraZoomLoc, camera.zoom);
             gl.uniform1i(colorModeLoc, colorMode);
+            gl.uniform1f(timeLoc, performance.now() / 1000.0); // Pass system time to shader
+            
             gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
 
             beginVertexFrame();
@@ -1452,38 +1611,43 @@ for (let i = 0; i < total; i++) {
                 renderedCount++;
                 let typeVal = (p.type === 'white') ? 1.0 : (p.type === 'black') ? 2.0 : 0.0; 
 
-                const len = p.history.length;
+                const len = MAX_TRAIL_LENGTH;
                 for (let h = 0; h < len; h++) {
-                    let pct = (h + 1) / len;
+                    // Iterate history from oldest to newest based on ring buffer index
+                    let actualH = (p.histIdx + h) % len;
+                    let histPt = p.history[actualH];
+
+                    // Use precalculated LUTs for massive FPS boost
+                    let fade = FADE_LUT[h]; 
+                    let taper = TAPER_LUT[h]; 
                     
-                    // Improved Tails Math
-                    let fade = Math.pow(pct, 1.5); 
-                    let taper = Math.pow(pct, 1.5) * 1.5; // Tapers off more dramatically and smoothly
-                    
-                    let histPt = p.history[h];
                     let speed = Math.sqrt(histPt.vx * histPt.vx + histPt.vy * histPt.vy);
                     let entropy = Math.min(1.0, speed / 40.0);
 
-                    // Outer Glow: wide, very transparent
-                    pushVertex(histPt.x, histPt.y, p.r, p.g, p.b, fade * 0.08, p.radius * 2.8 * taper, typeVal, p.density, entropy);
+                    // Reduced overlapping alpha values slightly because the ripples 
+                    // create intense constructive interference when stacked
                     
-                    // Mid Layer: Body of the tail
-                    pushVertex(histPt.x, histPt.y, Math.min(1.0, p.r * 1.2), Math.min(1.0, p.g * 1.2), Math.min(1.0, p.b * 1.2), fade * 0.25, p.radius * 1.4 * taper, typeVal, p.density, entropy);
+                    // Outer Wave: wide, very transparent
+                    pushVertex(histPt.x, histPt.y, p.r, p.g, p.b, fade * 0.04, p.radius * 3.5 * taper, typeVal, p.density, entropy);
+                    
+                    // Mid Layer: Body of the wave
+                    pushVertex(histPt.x, histPt.y, Math.min(1.0, p.r * 1.2), Math.min(1.0, p.g * 1.2), Math.min(1.0, p.b * 1.2), fade * 0.15, p.radius * 2.0 * taper, typeVal, p.density, entropy);
 
-                    // Inner Core: Sharp, intense
-                    pushVertex(histPt.x, histPt.y, Math.min(1.0, p.r * 1.5), Math.min(1.0, p.g * 1.5), Math.min(1.0, p.b * 1.5), fade * 0.85, p.radius * 0.6 * taper, typeVal, p.density, entropy);
+                    // Inner Core: Soft, intense
+                    pushVertex(histPt.x, histPt.y, Math.min(1.0, p.r * 1.5), Math.min(1.0, p.g * 1.5), Math.min(1.0, p.b * 1.5), fade * 0.55, p.radius * 0.8 * taper, typeVal, p.density, entropy);
                 }
             });
 
             photons.forEach(p => {
                 if (useCulling && (p.x < minWorldX || p.x > maxWorldX || p.y < minWorldY || p.y > maxWorldY)) return;
                 renderedCount++;
-                const len = p.history.length;
+                const len = 16;
                 for (let h = 0; h < len; h++) {
-                    let pct = (h + 1) / len;
-                    let fade = Math.pow(pct, 1.2);
-                    let taper = Math.pow(pct, 1.2) * 1.2;
-                    let histPt = p.history[h];
+                    let actualH = (p.histIdx + h) % len;
+                    let histPt = p.history[actualH];
+                    
+                    let fade = PHOTON_FADE_LUT[h];
+                    let taper = PHOTON_TAPER_LUT[h];
 
                     // Outer photon glow
                     pushVertex(histPt.x, histPt.y, 1.0, 0.85, 0.1, p.life * fade * 0.2, 8.0 * taper, 3.0, 1.0, 1.0);
