@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quantum Universe Map</title>
+    <title>Quantum Universe Map - 3D Engine</title>
     <style>
         :root {
             --bg-color: #0c0c0e;
@@ -14,538 +14,124 @@
             --text-muted: #8a8a93;
             --accent: #64748b;
             --accent-hover: #94a3b8;
-            --accent-bg: rgba(100, 116, 139, 0.15);
             --btn-bg: rgba(255, 255, 255, 0.03);
             --btn-hover: rgba(255, 255, 255, 0.08);
             --danger: #e17055;
             --success: #00b894;
-            --tab-active-border: #94a3b8;
         }
 
         body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--bg-color);
-            overflow: hidden;
-            font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            color: var(--text-main);
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background-color: var(--bg-color); overflow: hidden;
+            font-family: "Inter", -apple-system, sans-serif;
+            display: flex; flex-direction: column;
+            color: var(--text-main); user-select: none;
         }
 
         #site-header {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
+            position: absolute; top: 0; left: 0; width: 100%;
             background: var(--header-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border-color);
-            z-index: 10;
-            display: flex;
-            flex-direction: column;
+            z-index: 10; display: flex; flex-direction: column;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
             transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
-        #site-header.collapsed {
-            transform: translateY(-100%);
-        }
+        #site-header.collapsed { transform: translateY(-100%); }
 
         #header-toggle-btn {
-            position: absolute;
-            bottom: -26px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--header-bg);
-            border: 1px solid var(--border-color);
-            border-top: none;
-            color: var(--text-muted);
-            padding: 4px 24px;
-            border-radius: 0 0 12px 12px;
-            cursor: pointer;
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.4);
-            transition: all 0.2s ease;
-            z-index: -1; 
+            position: absolute; bottom: -26px; left: 50%; transform: translateX(-50%);
+            background: var(--header-bg); border: 1px solid var(--border-color);
+            border-top: none; color: var(--text-muted); padding: 4px 24px;
+            border-radius: 0 0 12px 12px; cursor: pointer; display: flex;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.4); transition: all 0.2s ease; z-index: -1; 
         }
+        #header-toggle-btn:hover { color: var(--text-main); background: rgba(40, 40, 45, 0.9); bottom: -28px; }
+        #header-toggle-btn svg { width: 18px; height: 18px; fill: currentColor; transition: transform 0.4s; }
+        #site-header.collapsed #header-toggle-btn svg { transform: rotate(180deg); }
 
-        #header-toggle-btn:hover {
-            color: var(--text-main);
-            background: rgba(40, 40, 45, 0.9);
-            bottom: -28px; 
-        }
+        .header-top { display: flex; justify-content: space-between; align-items: center; padding: 14px 28px; border-bottom: 1px solid var(--border-color); }
+        .brand h1 { margin: 0; font-size: 1.1rem; font-weight: 500; display: flex; align-items: center; gap: 10px; }
+        .brand h1::before { content: ''; display: inline-block; width: 8px; height: 8px; background: var(--accent); border-radius: 50%; }
 
-        #header-toggle-btn svg {
-            width: 18px;
-            height: 18px;
-            fill: currentColor;
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        #site-header.collapsed #header-toggle-btn svg {
-            transform: rotate(180deg);
-        }
-
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 28px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .brand h1 {
-            margin: 0;
-            font-size: 1.1rem;
-            font-weight: 500;
-            color: var(--text-main);
-            letter-spacing: 0.02em;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .brand h1::before {
-            content: '';
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background: var(--accent);
-            border-radius: 50%;
-        }
-
-        .telemetry-bar {
-            display: flex;
-            gap: 32px;
-            padding: 0;
-            border: none;
-            background: transparent;
-        }
-
-        .stat {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .stat .label {
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            letter-spacing: 0.8px;
-            font-weight: 600;
-        }
-
-        .stat span:last-child {
-            font-size: 0.85rem;
-            font-weight: 500;
-            font-variant-numeric: tabular-nums;
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-        }
-        
+        .telemetry-bar { display: flex; gap: 32px; }
+        .stat { display: flex; align-items: center; gap: 10px; }
+        .stat .label { font-size: 0.65rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; }
+        .stat span:last-child { font-size: 0.85rem; font-weight: 500; font-family: ui-monospace, monospace; }
         #stat-fps { color: var(--success); }
-        #stat-rendered { color: var(--text-main); }
-        #stat-history { color: var(--text-main); }
 
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 32px;
-        }
+        .header-actions { display: flex; align-items: center; gap: 32px; }
+        .stability-module { width: 220px; }
+        .stab-header { display: flex; justify-content: space-between; font-size: 0.65rem; font-weight: 600; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+        .bar-bg { background: rgba(0,0,0,0.4); border: 1px solid var(--border-color); border-radius: 4px; height: 6px; width: 100%; }
+        .bar-fill { height: 100%; width: 100%; background: var(--success); transition: width 0.15s; border-radius: 2px; }
+        #stability-desc { font-size: 0.65rem; color: var(--text-muted); margin-top: 8px; text-align: right; font-weight: 500; }
 
-        .stability-module {
-            width: 220px;
-        }
+        .tabs-container { padding: 0 28px; background: rgba(0, 0, 0, 0.1); }
+        .tabs-nav { display: flex; gap: 24px; border-bottom: 1px solid var(--border-color); padding-top: 8px; }
+        .tab-btn { background: transparent; color: var(--text-muted); border: none; border-bottom: 2px solid transparent; padding: 12px 4px; cursor: pointer; font-size: 0.8rem; font-weight: 500; transition: all 0.2s; margin-bottom: -1px; }
+        .tab-btn:hover { color: var(--text-main); }
+        .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
 
-        .stab-header {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.65rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-            letter-spacing: 0.5px;
-        }
+        .tab-content { padding: 20px 0; min-height: 52px; }
+        .tab-pane { display: none; gap: 40px; align-items: center; flex-wrap: wrap; }
+        .tab-pane.active { display: flex; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
 
-        .bar-bg {
-            background: rgba(0,0,0,0.4);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            height: 6px;
-            width: 100%;
-            overflow: hidden;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
-        }
-
-        .bar-fill {
-            height: 100%;
-            width: 100%;
-            background: var(--success);
-            transition: width 0.15s cubic-bezier(0.4, 0, 0.2, 1), background 0.3s ease;
-            border-radius: 2px;
-        }
-
-        #stability-desc {
-            font-size: 0.65rem;
-            color: var(--text-muted);
-            margin-top: 8px;
-            text-align: right;
-            font-weight: 500;
-        }
-
-        .tabs-container {
-            padding: 0 28px;
-            background: rgba(0, 0, 0, 0.1);
-        }
-
-        .tabs-nav {
-            display: flex;
-            gap: 24px;
-            border-bottom: 1px solid var(--border-color);
-            padding-top: 8px;
-        }
-
-        .tab-btn {
-            background: transparent;
-            color: var(--text-muted);
-            border: none;
-            border-bottom: 2px solid transparent;
-            padding: 12px 4px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            margin-bottom: -1px;
-            letter-spacing: 0.3px;
-        }
-
-        .tab-btn:hover {
-            color: var(--text-main);
-        }
-
-        .tab-btn.active {
-            color: var(--accent);
-            border-bottom-color: var(--accent);
-            font-weight: 600;
-        }
-
-        .tab-content {
-            padding: 20px 0;
-            min-height: 52px;
-        }
-
-        .tab-pane {
-            display: none;
-            gap: 40px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .tab-pane.active {
-            display: flex;
-            animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-4px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .group-label {
-            font-size: 0.65rem;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            letter-spacing: 0.8px;
-            font-weight: 600;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .btn-group {
-            display: flex;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 3px;
-            box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
-        }
-
-        .btn-mode {
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            padding: 6px 14px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.75rem;
-            font-weight: 500;
-            transition: all 0.2s ease;
-        }
-
+        .control-group { display: flex; flex-direction: column; gap: 10px; }
+        .group-label { font-size: 0.65rem; text-transform: uppercase; color: var(--text-muted); font-weight: 600; display: flex; justify-content: space-between; }
+        
+        .btn-group { display: flex; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--border-color); border-radius: 8px; padding: 3px; }
+        .btn-mode { background: transparent; border: none; color: var(--text-muted); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: 500; transition: all 0.2s; }
         .btn-mode:hover { color: var(--text-main); }
-        .btn-mode.active {
-            background: var(--btn-hover);
-            color: var(--text-main);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05);
-        }
+        .btn-mode.active { background: var(--btn-hover); color: var(--text-main); box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
 
-        .engine-controls {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid var(--border-color);
-            padding: 4px 4px 4px 12px;
-            border-radius: 8px;
-        }
+        .engine-controls { display: flex; align-items: center; gap: 12px; background: rgba(0, 0, 0, 0.2); border: 1px solid var(--border-color); padding: 4px 4px 4px 12px; border-radius: 8px; }
+        .gpu-text { font-size: 0.7rem; color: var(--text-muted); max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        .gpu-text {
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            font-family: ui-monospace, monospace;
-            max-width: 150px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .btn-toggle {
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            font-size: 0.7rem;
-            font-weight: 600;
-            padding: 6px 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
+        .btn-toggle { background: transparent; border: none; color: var(--text-muted); font-size: 0.7rem; font-weight: 600; padding: 6px 10px; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
         .btn-toggle:hover { color: var(--text-main); background: rgba(255,255,255,0.05); }
-        .btn-toggle.active {
-            background: var(--text-main);
-            color: #000;
-        }
+        .btn-toggle.active { background: var(--text-main); color: #000; }
 
-        .slider-group {
-            min-width: 180px;
-        }
+        .slider-group { min-width: 180px; }
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; height: 20px; outline: none; cursor: pointer; }
+        input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 3px; background: var(--border-color); border-radius: 2px; }
+        input[type=range]::-webkit-slider-thumb { height: 14px; width: 14px; border-radius: 50%; background: var(--text-main); -webkit-appearance: none; margin-top: -5px; transition: transform 0.1s; }
+        input[type=range]:active::-webkit-slider-thumb { transform: scale(1.15); }
 
-        input[type=range] {
-            -webkit-appearance: none;
-            width: 100%;
-            background: transparent;
-            height: 20px; 
-            outline: none;
-            cursor: pointer;
-        }
+        .actions { flex-direction: row; align-items: flex-end; margin-left: auto; gap: 12px; }
+        .btn-action { background: var(--btn-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 500; font-size: 0.75rem; transition: all 0.2s ease; }
+        .btn-action:hover { background: var(--btn-hover); border-color: var(--border-hover); }
+        .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 600; }
+        .btn-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
 
-        input[type=range]::-webkit-slider-runnable-track {
-            width: 100%;
-            height: 3px;
-            cursor: pointer;
-            background: var(--border-color);
-            border-radius: 2px;
-            transition: background 0.2s;
-        }
-
-        input[type=range]:hover::-webkit-slider-runnable-track {
-            background: var(--border-hover);
-        }
-
-        input[type=range]::-webkit-slider-thumb {
-            height: 14px;
-            width: 14px;
-            border-radius: 50%;
-            background: var(--text-main);
-            cursor: pointer;
-            -webkit-appearance: none;
-            margin-top: -5px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-            transition: transform 0.1s;
-        }
-
-        input[type=range]:active::-webkit-slider-thumb {
-            transform: scale(1.15);
-        }
-
-        .actions {
-            flex-direction: row;
-            align-items: flex-end;
-            margin-left: auto;
-            gap: 12px;
-        }
-
-        .btn-action {
-            background: var(--btn-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 8px 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 500;
-            font-size: 0.75rem;
-            transition: all 0.2s ease;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.02), 0 1px 2px rgba(0,0,0,0.2);
-        }
-        .btn-action:hover { 
-            background: var(--btn-hover); 
-            border-color: var(--border-hover);
-        }
-        .btn-action:active {
-            transform: translateY(1px);
-        }
-
-        .btn-primary {
-            background: var(--accent);
-            color: #fff;
-            border-color: var(--accent);
-            font-weight: 600;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 2px 6px rgba(59, 130, 246, 0.3);
-        }
-        .btn-primary:hover {
-            background: var(--accent-hover);
-            border-color: var(--accent-hover);
-        }
-
-        main {
-            width: 100%;
-            height: 100%;
-            position: relative;
-        }
-        
-        canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-            cursor: grab;
-        }
+        canvas { display: block; width: 100%; height: 100%; cursor: grab; }
         canvas:active { cursor: grabbing; }
 
-        #help-modal {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-            opacity: 1;
-            transition: opacity 0.3s ease;
-        }
-        #help-modal.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .help-content {
-            background: var(--header-bg);
-            border: 1px solid var(--border-color);
-            padding: 40px;
-            border-radius: 16px;
-            max-width: 540px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255,255,255,0.05);
-        }
-
-        .help-content h2 {
-            margin-top: 0;
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: var(--text-main);
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 16px;
-            margin-bottom: 24px;
-        }
-
-        .help-content p, .help-content ul {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            line-height: 1.6;
-        }
-
-        .help-content ul {
-            padding-left: 20px;
-        }
-
+        #help-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 100; opacity: 1; transition: opacity 0.3s; }
+        #help-modal.hidden { opacity: 0; pointer-events: none; }
+        .help-content { background: var(--header-bg); border: 1px solid var(--border-color); padding: 40px; border-radius: 16px; max-width: 540px; }
+        .help-content h2 { margin-top: 0; font-size: 1.3rem; color: var(--text-main); border-bottom: 1px solid var(--border-color); padding-bottom: 16px; margin-bottom: 24px; }
+        .help-content p, .help-content ul { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; }
         .help-content li { margin-bottom: 14px; }
-        .help-content strong { color: var(--text-main); font-weight: 600; }
-
-        .badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 6px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            vertical-align: middle;
-            margin-right: 4px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .proton-badge { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border-color: rgba(239, 68, 68, 0.3); }
-        .electron-badge { background: rgba(59, 130, 246, 0.15); color: #93c5fd; border-color: rgba(59, 130, 246, 0.3); }
-        .neutron-badge { background: rgba(255, 255, 255, 0.1); color: #e4e4e7; }
-
-        #btn-close-help {
-            margin-top: 32px;
-            width: 100%;
-            background: var(--text-main);
-            color: #000;
-            border: none;
-            padding: 12px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 2px 8px rgba(255,255,255,0.1);
-        }
-        #btn-close-help:hover { 
-            background: #e4e4e7; 
-            transform: translateY(-1px);
-        }
+        .help-content strong { color: var(--text-main); }
+        #btn-close-help { margin-top: 32px; width: 100%; background: var(--text-main); color: #000; border: none; padding: 12px; font-weight: 600; border-radius: 8px; cursor: pointer; }
     </style>
 </head>
 <body>
     
     <header id="site-header">
         <div class="header-top">
-            <div class="brand">
-                <h1>Quantum Universe Map</h1>
-            </div>
-            
+            <div class="brand"><h1>Quantum Universe Map</h1></div>
             <div class="telemetry-bar">
                 <div class="stat"><span class="label">FPS</span><span id="stat-fps">60</span></div>
                 <div class="stat"><span class="label">Rendered</span><span id="stat-rendered">0</span></div>
                 <div class="stat"><span class="label">Timeline</span><span id="stat-history">0</span></div>
             </div>
-
             <div class="header-actions">
                 <div class="stability-module">
-                    <div class="stab-header">
-                        <span>Stability Index</span>
-                        <span id="stability-value" style="color: var(--success);">100.0%</span>
-                    </div>
-                    <div class="bar-bg">
-                        <div id="stability-bar" class="bar-fill"></div>
-                    </div>
+                    <div class="stab-header"><span>Stability Index</span><span id="stability-value" style="color: var(--success);">100.0%</span></div>
+                    <div class="bar-bg"><div id="stability-bar" class="bar-fill"></div></div>
                     <div id="stability-desc">Equilibrium: Stable</div>
                 </div>
                 <button class="btn-action" id="btn-help">Guide</button>
@@ -553,46 +139,44 @@
         </div>
 
         <div class="tabs-container">
-            <!-- Navigation -->
             <div class="tabs-nav">
                 <button class="tab-btn active" data-target="pane-time">Time & Controls</button>
                 <button class="tab-btn" data-target="pane-display">Display & Render</button>
                 <button class="tab-btn" data-target="pane-sim">Simulation</button>
             </div>
 
-            <!-- Tab Contents -->
             <div class="tab-content">
-                
-                <!-- Time Pane -->
                 <div id="pane-time" class="tab-pane active">
                     <div class="control-group slider-group">
-                        <span class="group-label"><span>Time Dilate</span> <span id="time-value" style="color: var(--text-main);">1.00x</span></span>
+                        <span class="group-label"><span>Time Dilate</span> <span id="time-value">1.00x</span></span>
                         <input type="range" id="time-slider" min="0.0" max="3.0" step="0.01" value="1.0">
                     </div>
-
                     <div class="control-group slider-group">
-                        <span class="group-label"><span>Timeline Scrub</span> <span id="timeline-value" style="color: var(--text-main);">0/0</span></span>
+                        <span class="group-label"><span>Timeline Scrub</span> <span id="timeline-value">0/0</span></span>
                         <input type="range" id="timeline-slider" min="0" max="0" value="0" disabled>
                     </div>
-
                     <div class="control-group actions" style="margin-left: 0;">
                         <button class="btn-action" id="btn-play-pause">Pause</button>
                         <button class="btn-action" id="btn-clear-history">Clear History</button>
                     </div>
                 </div>
 
-                <!-- Display Pane -->
                 <div id="pane-display" class="tab-pane">
                     <div class="control-group">
                         <span class="group-label">Draw Mode</span>
                         <div class="btn-group">
                             <button class="btn-mode active" id="btn-color-waves">Waves</button>
                             <button class="btn-mode" id="btn-color-density">Density</button>
-                            <button class="btn-mode" id="btn-color-kinetic">Kinetic</button>
                             <button class="btn-mode" id="btn-color-struct">Structural</button>
                         </div>
                     </div>
-
+                    <div class="control-group">
+                        <span class="group-label">Dimensions</span>
+                        <div class="btn-group">
+                            <button class="btn-mode active" id="btn-dim-2d">2D Flat</button>
+                            <button class="btn-mode" id="btn-dim-3d">3D Volume</button>
+                        </div>
+                    </div>
                     <div class="control-group">
                         <span class="group-label">Render Engine</span>
                         <div class="engine-controls">
@@ -602,51 +186,32 @@
                     </div>
                 </div>
 
-                <!-- Simulation Pane -->
                 <div id="pane-sim" class="tab-pane">
                     <div class="control-group slider-group">
-                        <span class="group-label"><span>Spawn Count</span> <span id="count-value" style="color: var(--text-main);">200</span></span>
-                        <input type="range" id="count-slider" min="50" max="5000" step="50" value="200">
+                        <span class="group-label"><span>Spawn Count</span> <span id="count-value">800</span></span>
+                        <input type="range" id="count-slider" min="50" max="3000" step="50" value="800">
                     </div>
-
                     <div class="control-group actions" style="margin-left: 0;">
                         <button class="btn-action btn-primary" id="btn-bang">Trigger Big Bang</button>
                     </div>
                 </div>
-
             </div>
         </div>
-        
-        <!-- Pull Tab to collapse header -->
-        <button id="header-toggle-btn" aria-label="Toggle Header">
-            <svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
-        </button>
+        <button id="header-toggle-btn"><svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg></button>
     </header>
 
     <main id="main-area">
-        <canvas id="canvas"></canvas>
+        <canvas id="canvas" oncontextmenu="return false;"></canvas>
 
         <div id="help-modal" class="hidden">
             <div class="help-content">
-                <h2>Welcome to Quantum Universe Map</h2>
-                <p>This is a hardware-accelerated physics engine calculating continuous probability logic and interactions.</p>
+                <h2>Quantum Universe Map</h2>
+                <p>Hardware-accelerated physics engine with continuous probability logic.</p>
                 <ul>
-                    <li><strong>Navigation:</strong> Use your <strong>scroll wheel</strong> to zoom in/out. <strong>Click and drag</strong> to pan around.</li>
-                    <li><strong>Time Control:</strong> Use the <em>Time Dilate</em> slider in the <strong>Time & Controls</strong> tab to slow down or speed up logic. Use <em>Timeline Scrub</em> to travel back in time.</li>
-                    <li><strong>Quantum Visuals:</strong> Particles render as mathematical <em>Probability Wave Packets</em>. Due to the Uncertainty Principle, faster particles delocalize (spread out) into wider, softer waves. Overlapping waves create natural interference patterns.</li>
-                    <li><strong>The Physics:</strong> 
-                        <br><span class="badge proton-badge">Protons (+)</span> Heavy mass (2.0). Anchor elements. Attract electrons and neutrons.
-                        <br><span class="badge electron-badge">Electrons (-)</span> Tiny mass (0.1). Buzz wildly in high-speed orbits. Attracted to protons, repel electrons.
-                        <br><span class="badge neutron-badge">Neutrons (0)</span> Heaviest mass (2.5). Nuclear glue. Hold structures together via strong force.
-                        <br>Watch for <em>Photons</em>—flashes of light emitted during violent clashes!
-                        <br><strong>Critical Mass & Fission:</strong> Gravity and strong-forces pull heavy masses together. If too many protons and neutrons clump, the atom becomes unstable and undergoes violent fission!
-                    </li>
-                    <li><strong>Draw Modes:</strong> 
-                        <br><em>Waves:</em> Smooth, constructive interference logic.
-                        <br><em>Density:</em> Heat map outlining atomic mass structures.
-                        <br><em>Kinetic:</em> Maps kinetic energy (Cold=purple, Hot=pink).
-                        <br><em>Structural:</em> Discards round wave-forms and replaces particles with sharp, precise grid measurement vectors and crosshairs.
-                    </li>
+                    <li><strong>3D Controls:</strong> <em>Left Click + Drag</em> to Rotate Orbit. <em>Right Click + Drag</em> to Pan. <em>Scroll</em> to Zoom.</li>
+                    <li><strong>2D Controls:</strong> <em>Left/Right Click + Drag</em> to Pan. <em>Scroll</em> to Zoom.</li>
+                    <li><strong>Expanded Pull Grid:</strong> Uses an expanded 6x6 spatial hash block matrix for deeper gravity/force interactions across longer distances.</li>
+                    <li><strong>Simulation:</strong> Red = Protons. White = Electrons. Black = Neutrons. Flash = Photon burst from violent fission!</li>
                 </ul>
                 <button id="btn-close-help">Continue to Simulation</button>
             </div>
@@ -654,162 +219,232 @@
     </main>
 
     <script>
-        const canvas = document.getElementById('canvas');
-        const header = document.getElementById('site-header');
-        
-        // Setup high performance WebGL 2 Context
-        const gl = canvas.getContext('webgl2', { alpha: false, antialias: true, powerPreference: "high-performance" });
+        // --- STREAMING_CHUNK:Initializing 3D Math Engine ---
+        const mat4 = {
+            create: () => new Float32Array(16),
+            ortho: (out, left, right, bottom, top, near, far) => {
+                let lr = 1 / (left - right), bt = 1 / (bottom - top), nf = 1 / (near - far);
+                out[0] = -2 * lr; out[1] = 0; out[2] = 0; out[3] = 0;
+                out[4] = 0; out[5] = -2 * bt; out[6] = 0; out[7] = 0;
+                out[8] = 0; out[9] = 0; out[10] = 2 * nf; out[11] = 0;
+                out[12] = (left + right) * lr; out[13] = (top + bottom) * bt; out[14] = (far + near) * nf; out[15] = 1;
+            },
+            perspective: (out, fovy, aspect, near, far) => {
+                let f = 1.0 / Math.tan(fovy / 2), nf = 1 / (near - far);
+                out[0] = f / aspect; out[1] = 0; out[2] = 0; out[3] = 0;
+                out[4] = 0; out[5] = f; out[6] = 0; out[7] = 0;
+                out[8] = 0; out[9] = 0; out[10] = (far + near) * nf; out[11] = -1;
+                out[12] = 0; out[13] = 0; out[14] = (2 * far * near) * nf; out[15] = 0;
+            },
+            lookAt: (out, eye, center, up) => {
+                let x0, x1, x2, y0, y1, y2, z0, z1, z2, len;
+                let eyex = eye[0], eyey = eye[1], eyez = eye[2];
+                let upx = up[0], upy = up[1], upz = up[2];
+                let centerx = center[0], centery = center[1], centerz = center[2];
+                z0 = eyex - centerx; z1 = eyey - centery; z2 = eyez - centerz;
+                len = 1 / Math.hypot(z0, z1, z2); z0 *= len; z1 *= len; z2 *= len;
+                x0 = upy * z2 - upz * z1; x1 = upz * z0 - upx * z2; x2 = upx * z1 - upy * z0;
+                len = 1 / Math.hypot(x0, x1, x2); x0 *= len; x1 *= len; x2 *= len;
+                y0 = z1 * x2 - z2 * x1; y1 = z2 * x0 - z0 * x2; y2 = z0 * x1 - z1 * x0;
+                out[0] = x0; out[1] = y0; out[2] = z0; out[3] = 0;
+                out[4] = x1; out[5] = y1; out[6] = z1; out[7] = 0;
+                out[8] = x2; out[9] = y2; out[10] = z2; out[11] = 0;
+                out[12] = -(x0 * eyex + x1 * eyey + x2 * eyez);
+                out[13] = -(y0 * eyex + y1 * eyey + y2 * eyez);
+                out[14] = -(z0 * eyex + z1 * eyey + z2 * eyez); out[15] = 1;
+            },
+            multiply: (out, a, b) => {
+                let a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3];
+                let a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7];
+                let a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11];
+                let a30 = a[12], a31 = a[13], a32 = a[14], a33 = a[15];
+                let b0 = b[0], b1 = b[1], b2 = b[2], b3 = b[3];
+                out[0] = b0*a00 + b1*a10 + b2*a20 + b3*a30; out[1] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
+                out[2] = b0*a02 + b1*a12 + b2*a22 + b3*a32; out[3] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+                b0 = b[4]; b1 = b[5]; b2 = b[6]; b3 = b[7];
+                out[4] = b0*a00 + b1*a10 + b2*a20 + b3*a30; out[5] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
+                out[6] = b0*a02 + b1*a12 + b2*a22 + b3*a32; out[7] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+                b0 = b[8]; b1 = b[9]; b2 = b[10]; b3 = b[11];
+                out[8] = b0*a00 + b1*a10 + b2*a20 + b3*a30; out[9] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
+                out[10] = b0*a02 + b1*a12 + b2*a22 + b3*a32; out[11] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+                b0 = b[12]; b1 = b[13]; b2 = b[14]; b3 = b[15];
+                out[12] = b0*a00 + b1*a10 + b2*a20 + b3*a30; out[13] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
+                out[14] = b0*a02 + b1*a12 + b2*a22 + b3*a32; out[15] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+            }
+        };
 
-        if (!gl) {
-            console.error('WebGL 2 is not supported on this browser/device.');
-        }
+        const canvas = document.getElementById('canvas');
+        const gl = canvas.getContext('webgl2', { alpha: false, antialias: true, powerPreference: "high-performance" });
+        if (!gl) alert('WebGL 2 is required for this engine.');
 
         let width, height;
+        let is3DMode = false;
+        
+        let projMatrix = mat4.create();
+        let viewMatrix = mat4.create();
+        let projViewMatrix = mat4.create();
+
+        let camera = { tx: 0, ty: 0, tz: 0, distance: 2000, rotX: Math.PI/4, rotY: Math.PI/4, zoom: 0.5 };
+
         function resize() {
-            width = window.innerWidth;
-            height = window.innerHeight; // Canvas now fills the whole window behind the overlay header
-            canvas.width = width;
-            canvas.height = height;
+            width = window.innerWidth; height = window.innerHeight;
+            canvas.width = width; canvas.height = height;
             gl.viewport(0, 0, width, height);
+            updateMatrices();
         }
         window.addEventListener('resize', resize);
+
+        function updateMatrices() {
+            if (is3DMode) {
+                mat4.perspective(projMatrix, Math.PI / 4, width / height, 1.0, 100000.0);
+                let cx = camera.distance * Math.cos(camera.rotX) * Math.cos(camera.rotY);
+                let cy = camera.distance * Math.sin(camera.rotX) * Math.cos(camera.rotY);
+                let cz = camera.distance * Math.sin(camera.rotY); // Swapped Z/Y for typical top-down mapping
+                mat4.lookAt(viewMatrix, 
+                    [camera.tx + cx, camera.ty + cz, camera.tz + cy], 
+                    [camera.tx, camera.ty, camera.tz], [0, 1, 0]);
+            } else {
+                let w = width / (2 * camera.zoom); let h = height / (2 * camera.zoom);
+                mat4.ortho(projMatrix, -w, w, -h, h, -50000.0, 50000.0);
+                mat4.lookAt(viewMatrix, [camera.tx, camera.ty, 1000], [camera.tx, camera.ty, 0], [0, 1, 0]);
+            }
+            mat4.multiply(projViewMatrix, projMatrix, viewMatrix);
+        }
+
+        // --- STREAMING_CHUNK:Input and Camera Navigation ---
+        let isDragging = false;
+        let dragBtn = -1;
+        let lastMouse = { x: 0, y: 0 };
+
+        canvas.addEventListener('mousedown', (e) => {
+            isDragging = true; dragBtn = e.button;
+            lastMouse = { x: e.clientX, y: e.clientY };
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const dx = e.clientX - lastMouse.x;
+            const dy = e.clientY - lastMouse.y;
+            
+            if (is3DMode && dragBtn === 0) {
+                // Orbit Rotation
+                camera.rotY -= dx * 0.005;
+                camera.rotX += dy * 0.005;
+                camera.rotX = Math.max(-Math.PI/2 + 0.1, Math.min(Math.PI/2 - 0.1, camera.rotX));
+            } else {
+                // Panning
+                let panSpeed = is3DMode ? (camera.distance * 0.001) : (1.0 / camera.zoom);
+                if (is3DMode) {
+                    let rightX = Math.sin(camera.rotY); let rightY = -Math.cos(camera.rotY);
+                    let upX = Math.cos(camera.rotY) * Math.sin(camera.rotX); let upY = Math.sin(camera.rotY) * Math.sin(camera.rotX);
+                    camera.tx += (-dx * rightX - dy * upX) * panSpeed;
+                    camera.ty += (-dx * rightY - dy * upY) * panSpeed;
+                } else {
+                    camera.tx -= dx * panSpeed; camera.ty += dy * panSpeed;
+                }
+            }
+            lastMouse = { x: e.clientX, y: e.clientY };
+            updateMatrices();
+        });
+
+        window.addEventListener('mouseup', () => isDragging = false);
         
-        // --- Tab Logic ---
+        canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            if (is3DMode) {
+                camera.distance *= (e.deltaY > 0 ? 1.1 : 0.9);
+                camera.distance = Math.max(100, Math.min(camera.distance, 15000));
+            } else {
+                camera.zoom *= (e.deltaY < 0 ? 1.1 : 0.9);
+                camera.zoom = Math.max(0.05, Math.min(camera.zoom, 10));
+            }
+            updateMatrices();
+        }, { passive: false });
+
+        // --- STREAMING_CHUNK:UI Element Binding ---
         const tabBtns = document.querySelectorAll('.tab-btn');
         const tabPanes = document.querySelectorAll('.tab-pane');
+        tabBtns.forEach(btn => btn.addEventListener('click', () => {
+            tabBtns.forEach(b => b.classList.remove('active')); tabPanes.forEach(p => p.classList.remove('active'));
+            btn.classList.add('active'); document.getElementById(btn.dataset.target).classList.add('active');
+        }));
 
-        // Header Toggle Logic
-        const headerToggleBtn = document.getElementById('header-toggle-btn');
-        headerToggleBtn.addEventListener('click', () => {
-            header.classList.toggle('collapsed');
+        document.getElementById('header-toggle-btn').addEventListener('click', () => {
+            document.getElementById('site-header').classList.toggle('collapsed');
         });
 
-        tabBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                // Remove active classes
-                tabBtns.forEach(b => b.classList.remove('active'));
-                tabPanes.forEach(p => p.classList.remove('active'));
-                
-                // Add to clicked
-                btn.classList.add('active');
-                document.getElementById(btn.dataset.target).classList.add('active');
-                
-                // Trigger resize incase the new tab pane is slightly taller/shorter
-                setTimeout(resize, 10);
+        const helpModal = document.getElementById('help-modal');
+        document.getElementById('btn-help').addEventListener('click', () => helpModal.classList.remove('hidden'));
+        document.getElementById('btn-close-help').addEventListener('click', () => helpModal.classList.add('hidden'));
+
+        let colorMode = 0;
+        ['waves', 'density', 'struct'].forEach((m, idx) => {
+            document.getElementById('btn-color-' + m).addEventListener('click', (e) => {
+                colorMode = idx;
+                document.querySelectorAll('#pane-display .btn-group:first-child .btn-mode').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
             });
         });
-        setTimeout(resize, 10); // Initial resize
 
-        // --- DOM Elements Selection ---
+        document.getElementById('btn-dim-2d').addEventListener('click', (e) => {
+            is3DMode = false; updateMatrices(); bigBang();
+            document.getElementById('btn-dim-2d').classList.add('active'); document.getElementById('btn-dim-3d').classList.remove('active');
+        });
+        document.getElementById('btn-dim-3d').addEventListener('click', (e) => {
+            is3DMode = true; updateMatrices(); bigBang();
+            document.getElementById('btn-dim-3d').classList.add('active'); document.getElementById('btn-dim-2d').classList.remove('active');
+        });
+
         const countSlider = document.getElementById('count-slider');
-        const countValueDisplay = document.getElementById('count-value');
-
-        const timeSlider = document.getElementById('time-slider');
-        const timeValueDisplay = document.getElementById('time-value');
-        const timelineSlider = document.getElementById('timeline-slider');
-        const timelineValueDisplay = document.getElementById('timeline-value');
-
-        const btnPlayPause = document.getElementById('btn-play-pause');
-        const btnClearHistory = document.getElementById('btn-clear-history');
-        const btnBang = document.getElementById('btn-bang');
-
-        const btnColorWaves = document.getElementById('btn-color-waves');
-        const btnColorDensity = document.getElementById('btn-color-density');
-        const btnColorKinetic = document.getElementById('btn-color-kinetic');
-        const btnColorStruct = document.getElementById('btn-color-struct');
-
-        const stabilityValue = document.getElementById('stability-value');
-        const stabilityBar = document.getElementById('stability-bar');
-        const stabilityDesc = document.getElementById('stability-desc');
-
-        const statFps = document.getElementById('stat-fps');
-        const statRendered = document.getElementById('stat-rendered');
-        const statHistory = document.getElementById('stat-history');
+        countSlider.addEventListener('input', (e) => document.getElementById('count-value').textContent = e.target.value);
         
+        let useCulling = true;
         const btnToggleCulling = document.getElementById('btn-toggle-culling');
-        const gpuInfoDisplay = document.getElementById('gpu-info');
+        btnToggleCulling.addEventListener('click', () => {
+            useCulling = !useCulling;
+            btnToggleCulling.classList.toggle('active', useCulling);
+            btnToggleCulling.textContent = useCulling ? "Smart Culling: ON" : "Smart Culling: OFF";
+        });
 
-        const btnHelp = document.getElementById('btn-help');
-        const helpModal = document.getElementById('help-modal');
-        const btnCloseHelp = document.getElementById('btn-close-help');
-
-        let renderedCount = 0;
-
-        // --- GPU / APU Detection Engine ---
         let detectedGPU = "Unknown Architecture";
         const ext = gl.getExtension('WEBGL_debug_renderer_info');
+        const gpuInfoDisplay = document.getElementById('gpu-info');
         if (ext) {
             detectedGPU = gl.getParameter(ext.UNMASKED_RENDERER_WEBGL);
-            let cleanGPU = detectedGPU.replace(/ANGLE \(/g, '').replace(/\)/g, '').replace(/Direct3D.*/, '').trim();
-            gpuInfoDisplay.textContent = cleanGPU;
+            gpuInfoDisplay.textContent = detectedGPU.replace(/ANGLE \(/g, '').replace(/\)/g, '').replace(/Direct3D.*/, '').trim();
             gpuInfoDisplay.title = detectedGPU; 
         } else {
             gpuInfoDisplay.textContent = "Generic WebGL";
         }
 
-        // --- STREAMING_CHUNK:Setting up Modal & Camera Logic ---
-        btnHelp.addEventListener('click', () => {
-            helpModal.classList.remove('hidden');
-        });
-        btnCloseHelp.addEventListener('click', () => {
-            helpModal.classList.add('hidden');
+        let timeScale = 1.0;
+        document.getElementById('time-slider').addEventListener('input', (e) => { 
+            timeScale = parseFloat(e.target.value); document.getElementById('time-value').textContent = timeScale.toFixed(2) + 'x'; 
         });
 
-        // Camera Data
-        let camera = { x: 0, y: 0, zoom: 0.8 };
-        let isDragging = false;
-        let lastMouse = { x: 0, y: 0 };
-
-        canvas.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            lastMouse = { x: e.clientX, y: e.clientY };
+        const timelineSlider = document.getElementById('timeline-slider');
+        const btnPlayPause = document.getElementById('btn-play-pause');
+        let isPaused = false;
+        
+        btnPlayPause.addEventListener('click', () => {
+            isPaused = !isPaused; btnPlayPause.textContent = isPaused ? "Play" : "Pause";
         });
-
-        window.addEventListener('mousemove', (e) => {
-            if (isDragging) {
-                camera.x += (e.clientX - lastMouse.x) / camera.zoom;
-                camera.y -= (e.clientY - lastMouse.y) / camera.zoom; 
-                lastMouse = { x: e.clientX, y: e.clientY };
-            }
+        document.getElementById('btn-clear-history').addEventListener('click', () => {
+            historyBuffer.length = 0; pushHistorySnapshot(true); historyIndex = 0; updateTimelineUI();
         });
+        document.getElementById('btn-bang').addEventListener('click', bigBang);
 
-        window.addEventListener('mouseup', () => isDragging = false);
-        window.addEventListener('mouseleave', () => isDragging = false);
-
-        canvas.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            const rect = canvas.getBoundingClientRect();
-            const mouseX = e.clientX - rect.left;
-            const mouseY = e.clientY - rect.top;
-
-            const zoomFactor = 1.1;
-            const worldX = (mouseX - width / 2) / camera.zoom - camera.x;
-            const worldY = (height / 2 - mouseY) / camera.zoom - camera.y;
-
-            if (e.deltaY < 0) {
-                camera.zoom *= zoomFactor;
-            } else {
-                camera.zoom /= zoomFactor;
-            }
-            camera.zoom = Math.max(0.08, Math.min(camera.zoom, 8));
-
-            camera.x = (mouseX - width / 2) / camera.zoom - worldX;
-            camera.y = (height / 2 - mouseY) / camera.zoom - worldY;
-        }, { passive: false });
-
-        // --- STREAMING_CHUNK:Compiling Core Shaders ---
+        // --- STREAMING_CHUNK:Compiling 3D Quantum Shaders ---
         const vsSource = `#version 300 es
-            in vec2 a_position;
+            in vec3 a_position;
             in vec4 a_color;
             in float a_size;
-            in float a_alpha;
             in float a_type;
             in float a_density;
             in float a_entropy;
 
-            uniform vec2 u_resolution;
-            uniform vec2 u_camera_pos;
-            uniform float u_camera_zoom;
+            uniform mat4 u_matrix;
+            uniform int u_is_3d;
 
             out vec4 v_color;
             out float v_alpha;
@@ -819,22 +454,22 @@
             out float v_spread;
 
             void main() {
-                // Continuous, smooth positioning
-                vec2 worldPos = a_position + u_camera_pos;
-                vec2 screenPos = worldPos * u_camera_zoom;
-                vec2 clipSpace = screenPos / (u_resolution * 0.5);
-                gl_Position = vec4(clipSpace, 0.0, 1.0);
+                vec4 worldPos = vec4(a_position, 1.0);
+                gl_Position = u_matrix * worldPos;
                 
-                // Quantum Uncertainty Principle: 
-                // Higher kinetic energy (entropy) = higher positional uncertainty (delocalization/spread)
                 float spread = 1.0 + (a_entropy * 3.0);
                 v_spread = spread;
                 
-                // Scale up size to allow the probability waves to overlap and interfere
-                gl_PointSize = (a_size * 2.2 * spread) * u_camera_zoom;
+                // Keep sizes somewhat consistent across dimension modes
+                float pSize = (a_size * 2.2 * spread);
+                if (u_is_3d == 1) {
+                    gl_PointSize = pSize * (1500.0 / max(gl_Position.w, 1.0));
+                } else {
+                    gl_PointSize = pSize;
+                }
                 
-                v_color = a_color;
-                v_alpha = a_alpha;
+                v_color = vec4(a_color.rgb, 1.0);
+                v_alpha = a_color.a;
                 v_type = a_type;
                 v_density = a_density;
                 v_entropy = a_entropy;
@@ -843,7 +478,6 @@
 
         const fsSource = `#version 300 es
             precision highp float;
-            
             in vec4 v_color;
             in float v_alpha;
             in float v_type;
@@ -853,18 +487,12 @@
 
             uniform int u_color_mode; 
             uniform float u_time;
-
             out vec4 outColor;
 
             vec3 getThermalColor(float intensity) {
-                // Smooth, organic color gradients (no neon)
-                vec3 c1 = vec3(0.05, 0.08, 0.15); // Deep slate/blue
-                vec3 c2 = vec3(0.15, 0.30, 0.50); // Muted ocean
-                vec3 c3 = vec3(0.40, 0.40, 0.55); // Soft lavender/gray
-                vec3 c4 = vec3(0.70, 0.60, 0.50); // Warm sand
-                vec3 c5 = vec3(0.95, 0.90, 0.85); // Soft white
-
-                float t = clamp(intensity, 0.0, 1.0);
+                vec3 c1 = vec3(0.05, 0.08, 0.15); vec3 c2 = vec3(0.15, 0.30, 0.50);
+                vec3 c3 = vec3(0.40, 0.40, 0.55); vec3 c4 = vec3(0.70, 0.60, 0.50);
+                vec3 c5 = vec3(0.95, 0.90, 0.85); float t = clamp(intensity, 0.0, 1.0);
                 if (t < 0.25) return mix(c1, c2, t * 4.0);
                 else if (t < 0.5) return mix(c2, c3, (t - 0.25) * 4.0);
                 else if (t < 0.75) return mix(c3, c4, (t - 0.5) * 4.0);
@@ -875,863 +503,431 @@
                 vec2 coord = gl_PointCoord - vec2(0.5);
                 float distSq = dot(coord, coord);
                 
-                // --- STRUCTURAL (VECTOR) MEASUREMENT MODE ---
-                if (u_color_mode == 3) {
-                    float thickness = 0.06;
-                    
-                    // Sharp internal tracking crosshair
-                    float crossX = step(abs(coord.x), thickness) * step(abs(coord.y), 0.35);
-                    float crossY = step(abs(coord.y), thickness) * step(abs(coord.x), 0.35);
-                    float cross = max(crossX, crossY);
-                    
-                    // Measurement brackets/nodes on the outer corners
-                    float bracketDist = max(abs(coord.x), abs(coord.y));
-                    float bracket = step(0.35, bracketDist) * step(bracketDist, 0.45);
-                    float cornerMask = step(0.15, min(abs(coord.x), abs(coord.y)));
-                    float brackets = bracket * cornerMask;
-
-                    // Combine shapes
-                    float shape = max(cross, brackets);
-                    
-                    // Discard empty space or outside radius
-                    if (shape == 0.0 || distSq > 0.25) discard;
-                    
-                    vec3 tColor = vec3(0.5, 0.8, 0.7); // Neutral cyan data-point
-                    if (v_type == 1.0) tColor = vec3(0.3, 0.6, 1.0); // Electron blue
-                    if (v_type == 2.0) tColor = vec3(0.9, 0.4, 0.4); // Neutron red
-                    
+                if (u_color_mode == 2) {
+                    // Structural mode
+                    if (distSq > 0.25) discard;
+                    float cross = max(step(abs(coord.x), 0.06)*step(abs(coord.y), 0.35), step(abs(coord.y), 0.06)*step(abs(coord.x), 0.35));
+                    float bracket = step(0.35, max(abs(coord.x), abs(coord.y))) * step(max(abs(coord.x), abs(coord.y)), 0.45);
+                    float shape = max(cross, bracket * step(0.15, min(abs(coord.x), abs(coord.y))));
+                    if (shape == 0.0) discard;
+                    vec3 tColor = vec3(0.5, 0.8, 0.7);
+                    if (v_type == 1.0) tColor = vec3(0.3, 0.6, 1.0);
+                    if (v_type == 2.0) tColor = vec3(0.9, 0.4, 0.4);
                     outColor = vec4(tColor * shape * 2.0, v_alpha * 2.0);
-                    return; // exit early for this mode
+                    return;
                 }
 
-                // --- QUANTUM WAVE PACKET MATH (For all other modes) ---
                 if (distSq > 0.25) discard;
                 float dist = sqrt(distSq) * 2.0; 
-                
-                // 1. Gaussian Envelope (Probability bounds of the wave packet)
-                float envelope = exp(-dist * dist * 4.0 * v_spread) * pow(1.0 - dist, 1.5);
-                
-                // 2. De Broglie Probability Ripples
-                float frequency = 8.0 + (v_entropy * 15.0);
-                float phase = (dist * frequency) - (u_time * 4.0);
-                float probRipple = pow(cos(phase), 2.0) * 0.6 + 0.4; 
-                
-                // 3. Combined Wavefunction Amplitude
+                float envelope = exp(-dist * dist * 4.0 * v_spread) * pow(max(1.0 - dist, 0.0), 1.5);
+                float probRipple = pow(cos((dist * (8.0 + v_entropy * 15.0)) - (u_time * 4.0)), 2.0) * 0.6 + 0.4; 
                 float waveAmp = (envelope * probRipple) / (1.0 + v_spread * 0.5);
 
-                vec3 waveSpectrum = vec3(0.0);
-                
-                if (u_color_mode == 2) {
-                    float e = clamp(v_entropy, 0.0, 1.0);
-                    
-                    vec3 e1 = vec3(0.08, 0.10, 0.15); // Cold space
-                    vec3 e2 = vec3(0.20, 0.35, 0.50); // Flowing blue
-                    vec3 e3 = vec3(0.50, 0.55, 0.65); // Neutral transition
-                    vec3 e4 = vec3(0.80, 0.65, 0.50); // Heated gold
-                    vec3 e5 = vec3(1.00, 0.95, 0.90); // Peak energy
-
-                    if (e < 0.25) waveSpectrum = mix(e1, e2, e * 4.0);
-                    else if (e < 0.5) waveSpectrum = mix(e2, e3, (e - 0.25) * 4.0);
-                    else if (e < 0.75) waveSpectrum = mix(e3, e4, (e - 0.5) * 4.0);
-                    else waveSpectrum = mix(e4, e5, (e - 0.75) * 4.0);
-                    
-                    outColor = vec4(waveSpectrum * waveAmp * 2.0, waveAmp * v_alpha);
-
-                } else {
-                    if (u_color_mode == 1) {
-                        waveSpectrum = getThermalColor(v_density);
-                    } else {
-                        waveSpectrum = v_color.rgb;
-                    }
-                    outColor = vec4(waveSpectrum * waveAmp * 1.5, waveAmp * v_alpha);
-                }
+                vec3 spec = (u_color_mode == 1) ? getThermalColor(v_density) : v_color.rgb;
+                outColor = vec4(spec * waveAmp * 1.5, waveAmp * v_alpha);
             }
         `;
 
-        function createShader(gl, type, source) {
-            const shader = gl.createShader(type);
-            gl.shaderSource(shader, source);
-            gl.compileShader(shader);
-            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-                console.error(gl.getShaderInfoLog(shader));
-                gl.deleteShader(shader);
-                return null;
-            }
+        function createShader(type, source) {
+            const shader = gl.createShader(type); gl.shaderSource(shader, source); gl.compileShader(shader);
+            if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) console.error(gl.getShaderInfoLog(shader));
             return shader;
         }
 
-        const vertexShader = createShader(gl, gl.VERTEX_SHADER, vsSource);
-        const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fsSource);
         const program = gl.createProgram();
-        gl.attachShader(program, vertexShader);
-        gl.attachShader(program, fragmentShader);
+        gl.attachShader(program, createShader(gl.VERTEX_SHADER, vsSource));
+        gl.attachShader(program, createShader(gl.FRAGMENT_SHADER, fsSource));
         gl.linkProgram(program);
 
-        // --- STREAMING_CHUNK:Configuring Buffers and Upload Optimizer ---
-        const positionLoc = gl.getAttribLocation(program, 'a_position');
+        const posLoc = gl.getAttribLocation(program, 'a_position');
         const colorLoc = gl.getAttribLocation(program, 'a_color');
         const sizeLoc = gl.getAttribLocation(program, 'a_size');
-        const alphaLoc = gl.getAttribLocation(program, 'a_alpha');
         const typeLoc = gl.getAttribLocation(program, 'a_type');
         const densityLoc = gl.getAttribLocation(program, 'a_density');
         const entropyLoc = gl.getAttribLocation(program, 'a_entropy');
 
-        const resolutionLoc = gl.getUniformLocation(program, 'u_resolution');
-        const cameraPosLoc = gl.getUniformLocation(program, 'u_camera_pos');
-        const cameraZoomLoc = gl.getUniformLocation(program, 'u_camera_zoom');
+        const matrixLoc = gl.getUniformLocation(program, 'u_matrix');
+        const is3DLoc = gl.getUniformLocation(program, 'u_is_3d');
         const colorModeLoc = gl.getUniformLocation(program, 'u_color_mode');
-        const timeLoc = gl.getUniformLocation(program, 'u_time'); // Added Uniform
+        const timeLoc = gl.getUniformLocation(program, 'u_time');
 
+        // --- STREAMING_CHUNK:Configuring Visual Grid Lines ---
+        const gridVs = `#version 300 es
+            in vec3 a_position; uniform mat4 u_matrix;
+            void main() { gl_Position = u_matrix * vec4(a_position, 1.0); }`;
+        const gridFs = `#version 300 es
+            precision highp float; out vec4 outColor;
+            void main() { outColor = vec4(1.0, 1.0, 1.0, 0.05); }`;
+        const gridProg = gl.createProgram();
+        gl.attachShader(gridProg, createShader(gl.VERTEX_SHADER, gridVs));
+        gl.attachShader(gridProg, createShader(gl.FRAGMENT_SHADER, gridFs));
+        gl.linkProgram(gridProg);
+
+        let gridVerts = [];
+        let steps = 40, gSize = 8000;
+        for(let i = -steps; i <= steps; i++) {
+            let p = i * (gSize/steps);
+            gridVerts.push(p, -gSize, 0, p, gSize, 0); // X lines
+            gridVerts.push(-gSize, p, 0, gSize, p, 0); // Y lines
+        }
+        const gridBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, gridBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(gridVerts), gl.STATIC_DRAW);
+
+        // --- STREAMING_CHUNK:Vertex Buffers for Particles ---
         const buffer = gl.createBuffer();
-
-        const FLOATS_PER_VERTEX = 10;
-        const MAX_EXPECTED_PARTICLES = Math.ceil(parseInt(countSlider.max) * 2.55);
-        const MAX_EXPECTED_PHOTONS = 800; // Increased to handle fission bursts
-        // Upped vertex count size for 3-layer tails
-        const MAX_RENDER_VERTICES = (MAX_EXPECTED_PARTICLES * 20 * 3) + (MAX_EXPECTED_PHOTONS * 16 * 2) + 2048;
-
+        const FLOATS_PER_VERTEX = 11; // x,y,z, r,g,b,a, size, type, dens, ent
+        const MAX_EXPECTED_PARTICLES = 3000;
+        const MAX_RENDER_VERTICES = (MAX_EXPECTED_PARTICLES * 20 * 3) + (1000 * 16 * 2);
         let vertexData = new Float32Array(MAX_RENDER_VERTICES * FLOATS_PER_VERTEX);
         let vertexCount = 0;
 
         gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
         gl.bufferData(gl.ARRAY_BUFFER, vertexData.byteLength, gl.DYNAMIC_DRAW);
 
-        function beginVertexFrame() { vertexCount = 0; }
-
-        function pushVertex(x, y, r, g, b, a, size, type, density, entropy) {
+        function pushVertex(x, y, z, r, g, b, a, size, type, dens, ent) {
             if (vertexCount >= MAX_RENDER_VERTICES) return;
-            const i = vertexCount * FLOATS_PER_VERTEX;
-            vertexData[i] = x; vertexData[i + 1] = y;
-            vertexData[i + 2] = r; vertexData[i + 3] = g; vertexData[i + 4] = b;
-            vertexData[i + 5] = a; vertexData[i + 6] = size; vertexData[i + 7] = type;
-            vertexData[i + 8] = density; vertexData[i + 9] = entropy;
+            let i = vertexCount * FLOATS_PER_VERTEX;
+            vertexData[i]=x; vertexData[i+1]=y; vertexData[i+2]=z;
+            vertexData[i+3]=r; vertexData[i+4]=g; vertexData[i+5]=b; vertexData[i+6]=a;
+            vertexData[i+7]=size; vertexData[i+8]=type; vertexData[i+9]=dens; vertexData[i+10]=ent;
             vertexCount++;
         }
 
-        // --- STREAMING_CHUNK:Grid Shaders and Logic ---
-        // NEW: Replaced basic lines with a full screen measurement grid quad
-        const gridVsSource = `#version 300 es
-            in vec2 a_position;
-            void main() {
-                gl_Position = vec4(a_position, 0.0, 1.0);
-            }
-        `;
-        const gridFsSource = `#version 300 es
-            precision highp float;
-            uniform vec2 u_resolution;
-            uniform vec2 u_camera_pos;
-            uniform float u_camera_zoom;
-            out vec4 outColor;
+        const FADE_LUT = new Float32Array(20); const TAPER_LUT = new Float32Array(20);
+        for (let i = 0; i < 20; i++) { let pct = (i+1)/20; FADE_LUT[i] = Math.pow(pct, 1.5); TAPER_LUT[i] = Math.pow(pct, 1.5)*1.5; }
 
-            void main() {
-                vec2 fragCoord = gl_FragCoord.xy;
-                
-                // Convert pixel coordinates to simulated world coordinates
-                vec2 screenPos = fragCoord - u_resolution * 0.5;
-                vec2 worldPos = (screenPos / u_camera_zoom) - u_camera_pos;
-                
-                float gridSize = 100.0;
-                
-                // Minor grid lines
-                vec2 gridUV = fract(worldPos / gridSize);
-                vec2 pxSize = vec2(1.0) / (gridSize * u_camera_zoom);
-                vec2 lines = smoothstep(pxSize * 1.5, pxSize * 0.5, gridUV) + smoothstep(1.0 - pxSize * 1.5, 1.0 - pxSize * 0.5, gridUV);
-                float isLine = clamp(lines.x + lines.y, 0.0, 1.0);
-                
-                // Major grid lines (every 5th line)
-                vec2 majorUV = fract(worldPos / (gridSize * 5.0));
-                vec2 majorPx = pxSize * 5.0; 
-                vec2 majorLines = smoothstep(majorPx * 1.5, majorPx * 0.5, majorUV) + smoothstep(1.0 - majorPx * 1.5, 1.0 - majorPx * 0.5, majorUV);
-                float isMajor = clamp(majorLines.x + majorLines.y, 0.0, 1.0);
-                
-                // Measurement Crosshairs at intersections
-                vec2 crossUV = fract((worldPos / gridSize) + 0.5); 
-                float crossX = smoothstep(0.06, 0.05, abs(crossUV.x - 0.5)) * smoothstep(0.015, 0.0, abs(crossUV.y - 0.5));
-                float crossY = smoothstep(0.06, 0.05, abs(crossUV.y - 0.5)) * smoothstep(0.015, 0.0, abs(crossUV.x - 0.5));
-                float isCross = clamp(crossX + crossY, 0.0, 1.0);
-
-                float alpha = clamp(0.06 * (u_camera_zoom + 0.15), 0.01, 0.15);
-                
-                float intensity = max(isLine * 0.15, isMajor * 0.4);
-                intensity = max(intensity, isCross * 1.0);
-                
-                if (intensity <= 0.0) discard;
-                
-                outColor = vec4(1.0, 1.0, 1.0, intensity * alpha);
-            }
-        `;
-
-        const gridVertexShader = createShader(gl, gl.VERTEX_SHADER, gridVsSource);
-        const gridFragmentShader = createShader(gl, gl.FRAGMENT_SHADER, gridFsSource);
-        const gridProgram = gl.createProgram();
-        gl.attachShader(gridProgram, gridVertexShader);
-        gl.attachShader(gridProgram, gridFragmentShader);
-        gl.linkProgram(gridProgram);
-
-        const gridPositionLoc = gl.getAttribLocation(gridProgram, 'a_position');
-        const gridResolutionLoc = gl.getUniformLocation(gridProgram, 'u_resolution');
-        const gridCameraPosLoc = gl.getUniformLocation(gridProgram, 'u_camera_pos');
-        const gridCameraZoomLoc = gl.getUniformLocation(gridProgram, 'u_camera_zoom');
-
-        const gridBuffer = gl.createBuffer();
-        // A single full-screen quad to handle the fragment shader grid math
-        const gridVertices = new Float32Array([
-            -1.0, -1.0,
-             1.0, -1.0,
-            -1.0,  1.0,
-             1.0,  1.0
-        ]);
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, gridBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, gridVertices, gl.STATIC_DRAW);
-
-        // --- STREAMING_CHUNK:Simulation State and State Management ---
+        // --- STREAMING_CHUNK:Simulation State & 6x6 Spatial Grid ---
         const particlePool = [];
-        const MAX_TRAIL_LENGTH = 20;
-        const HISTORY_CAPTURE_STRIDE = 1;
-        let physicsTickCounter = 0;
         let photons = [];
-        let colorMode = 0; 
-        let historyBuffer = [];
-        let historyIndex = 0;
-        let isPaused = false;
-        let timeScale = 1.0;
+        let historyBuffer = []; let historyIndex = 0;
 
-        // --- OPTIMIZATION: Flat Array Spatial Hash Grid & Memory Pooling ---
-        // Completely removes the use of dynamic Maps and Arrays during the physics tick
-        // which eliminates CPU-stalling Garbage Collection (GC) pauses.
-        const GRID_SIZE = 8192; // Must be power of 2
-        const HASH_MASK = GRID_SIZE - 1;
+        // Expanded hash grid to prevent intense overlaps
+        const GRID_SIZE = 16384, HASH_MASK = GRID_SIZE - 1;
         const gridHead = new Int32Array(GRID_SIZE);
-        const MAX_POSSIBLE_PARTICLES = 15000;
-        const gridNext = new Int32Array(MAX_POSSIBLE_PARTICLES);
+        const gridNext = new Int32Array(MAX_EXPECTED_PARTICLES + 1000);
 
-        // --- OPTIMIZATION: Pre-calculate expensive math for the render pass ---
-        const FADE_LUT = new Float32Array(MAX_TRAIL_LENGTH);
-        const TAPER_LUT = new Float32Array(MAX_TRAIL_LENGTH);
-        for (let i = 0; i < MAX_TRAIL_LENGTH; i++) {
-            let pct = (i + 1) / MAX_TRAIL_LENGTH;
-            FADE_LUT[i] = Math.pow(pct, 1.5);
-            TAPER_LUT[i] = Math.pow(pct, 1.5) * 1.5;
-        }
-
-        const PHOTON_FADE_LUT = new Float32Array(16);
-        const PHOTON_TAPER_LUT = new Float32Array(16);
-        for (let i = 0; i < 16; i++) {
-            let pct = (i + 1) / 16;
-            PHOTON_FADE_LUT[i] = Math.pow(pct, 1.2);
-            PHOTON_TAPER_LUT[i] = Math.pow(pct, 1.2) * 1.2;
-        }
-
-        function createGroup(type, count, r, g, b, radius, mass) {
+        function createGroup(type, count, r, g, b, rad, mass) {
             for (let i = 0; i < count; i++) {
-                const angle = Math.random() * Math.PI * 2;
-                const speed = 0.5 + Math.random() * 18.0; 
+                let speed = 0.5 + Math.random() * 18.0;
+                let vx=0, vy=0, vz=0, x=0, y=0, z=0;
                 
-                // Pre-allocate history ring buffer to avoid creating arrays every frame
-                const hist = [];
-                for(let h=0; h<MAX_TRAIL_LENGTH; h++) {
-                    hist.push({x: 0, y: 0, vx: 0, vy: 0});
+                if (is3DMode) {
+                    let theta = Math.random() * 2 * Math.PI; let phi = Math.acos(2 * Math.random() - 1);
+                    vx = Math.sin(phi)*Math.cos(theta)*speed; vy = Math.sin(phi)*Math.sin(theta)*speed; vz = Math.cos(phi)*speed;
+                    x = (Math.random()-0.5)*800; y = (Math.random()-0.5)*800; z = (Math.random()-0.5)*800;
+                } else {
+                    let angle = Math.random() * Math.PI * 2;
+                    vx = Math.cos(angle)*speed; vy = Math.sin(angle)*speed;
+                    x = (Math.random()-0.5)*800; y = (Math.random()-0.5)*800;
                 }
-
-                particlePool.push({
-                    x: 0, y: 0, 
-                    vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
-                    type: type, r: r, g: g, b: b, radius: radius, mass: mass, density: 0.0, 
-                    history: hist, histIdx: 0, cx: 0, cy: 0 
-                });
+                
+                const hist = []; for(let h=0; h<20; h++) hist.push({x, y, z, vx, vy, vz});
+                particlePool.push({ x, y, z, vx, vy, vz, type, r, g, b, rad, mass, dens: 0, hist, histIdx: 0, cx:0, cy:0, cz:0 });
             }
         }
 
         function captureState() {
-            const numParticles = particlePool.length;
-            const numPhotons = photons.length;
-            const size = 2 + numParticles * 6 + numPhotons * 5;
-            const data = new Float32Array(size);
-
-            data[0] = numParticles; data[1] = numPhotons;
-            let idx = 2;
-            
-            for (let i = 0; i < numParticles; i++) {
-                const p = particlePool[i];
-                data[idx++] = p.x; data[idx++] = p.y; data[idx++] = p.vx; data[idx++] = p.vy;
-                data[idx++] = (p.type === 'white') ? 1.0 : (p.type === 'black') ? 2.0 : 0.0; 
-                data[idx++] = p.density;
+            const numP = particlePool.length, numPh = photons.length;
+            const data = new Float32Array(2 + numP * 8 + numPh * 7);
+            data[0] = numP; data[1] = numPh; let idx = 2;
+            for (let i = 0; i < numP; i++) {
+                let p = particlePool[i];
+                data[idx++] = p.x; data[idx++] = p.y; data[idx++] = p.z;
+                data[idx++] = p.vx; data[idx++] = p.vy; data[idx++] = p.vz;
+                data[idx++] = (p.type === 'white')?1:(p.type==='black')?2:0; data[idx++] = p.dens;
             }
-
-            for (let i = 0; i < numPhotons; i++) {
-                const p = photons[i];
-                data[idx++] = p.x; data[idx++] = p.y; data[idx++] = p.vx; data[idx++] = p.vy; data[idx++] = p.life;
+            for (let i = 0; i < numPh; i++) {
+                let p = photons[i];
+                data[idx++] = p.x; data[idx++] = p.y; data[idx++] = p.z;
+                data[idx++] = p.vx; data[idx++] = p.vy; data[idx++] = p.vz; data[idx++] = p.life;
             }
             return data;
         }
 
         function restoreState(data) {
             if (!data) return;
-            const numParticles = data[0];
-            const numPhotons = data[1];
-            let idx = 2;
-
-            while (particlePool.length < numParticles) {
-                const hist = [];
-                for(let h=0; h<MAX_TRAIL_LENGTH; h++) hist.push({x:0,y:0,vx:0,vy:0});
-                particlePool.push({ x: 0, y: 0, vx: 0, vy: 0, type: 'red', r: 1.0, g: 0.2, b: 0.27, radius: 6.0, mass: 2.0, density: 0.0, history: hist, histIdx: 0, cx: 0, cy: 0 });
+            const numP = data[0], numPh = data[1]; let idx = 2;
+            
+            while(particlePool.length < numP) {
+                const h = []; for(let i=0;i<20;i++) h.push({x:0,y:0,z:0,vx:0,vy:0,vz:0});
+                particlePool.push({x:0,y:0,z:0,vx:0,vy:0,vz:0,type:'red',r:1,g:0.2,b:0.2,rad:6,mass:2,dens:0,hist:h,histIdx:0});
             }
-            if (particlePool.length > numParticles) particlePool.length = numParticles;
-
-            for (let i = 0; i < numParticles; i++) {
-                const p = particlePool[i];
-                p.x = data[idx++]; p.y = data[idx++]; p.vx = data[idx++]; p.vy = data[idx++];
-                const typeId = data[idx++]; p.density = data[idx++];
-
-                if (typeId === 0.0) { p.type = 'red'; p.r = 0.8; p.g = 0.1; p.b = 0.2; p.radius = 6.0; p.mass = 2.0; } 
-                else if (typeId === 1.0) { p.type = 'white'; p.r = 0.0; p.g = 0.6; p.b = 1.0; p.radius = 4.0; p.mass = 0.1; } 
-                else { p.type = 'black'; p.r = 0.6; p.g = 0.6; p.b = 0.7; p.radius = 8.0; p.mass = 2.5; }
-
-                for (let h = 0; h < MAX_TRAIL_LENGTH; h++) {
-                    p.history[h].x = p.x; p.history[h].y = p.y; 
-                    p.history[h].vx = p.vx; p.history[h].vy = p.vy;
-                }
-                p.histIdx = 0;
+            particlePool.length = numP;
+            
+            for (let i = 0; i < numP; i++) {
+                let p = particlePool[i];
+                p.x = data[idx++]; p.y = data[idx++]; p.z = data[idx++];
+                p.vx = data[idx++]; p.vy = data[idx++]; p.vz = data[idx++];
+                let t = data[idx++]; p.dens = data[idx++];
+                if(t===0) { p.type='red'; p.r=0.8; p.g=0.1; p.b=0.2; p.rad=6; p.mass=2; }
+                else if(t===1) { p.type='white'; p.r=0; p.g=0.6; p.b=1; p.rad=4; p.mass=0.1; }
+                else { p.type='black'; p.r=0.6; p.g=0.6; p.b=0.7; p.rad=8; p.mass=2.5; }
+                for(let h=0; h<20; h++) { p.hist[h].x = p.x; p.hist[h].y = p.y; p.hist[h].z = p.z; p.hist[h].vx = p.vx; p.hist[h].vy = p.vy; p.hist[h].vz = p.vz; }
             }
 
-            while (photons.length < numPhotons) {
-                const pHist = [];
-                for(let h=0; h<16; h++) pHist.push({x:0,y:0,vx:0,vy:0});
-                photons.push({ x: 0, y: 0, vx: 0, vy: 0, life: 1.0, decay: 0.02, history: pHist, histIdx: 0 });
+            while(photons.length < numPh) {
+                const h = []; for(let i=0;i<16;i++) h.push({x:0,y:0,z:0,vx:0,vy:0,vz:0});
+                photons.push({x:0,y:0,z:0,vx:0,vy:0,vz:0,life:1,hist:h,histIdx:0});
             }
-            if (photons.length > numPhotons) photons.length = numPhotons;
-
-            for (let i = 0; i < numPhotons; i++) {
-                const p = photons[i];
-                p.x = data[idx++]; p.y = data[idx++]; p.vx = data[idx++]; p.vy = data[idx++]; p.life = data[idx++];
-                p.decay = 0.02;
-
-                for (let h = 0; h < 16; h++) {
-                    p.history[h].x = p.x; p.history[h].y = p.y;
-                    p.history[h].vx = p.vx; p.history[h].vy = p.vy;
-                }
-                p.histIdx = 0;
+            photons.length = numPh;
+            
+            for (let i = 0; i < numPh; i++) {
+                let p = photons[i];
+                p.x = data[idx++]; p.y = data[idx++]; p.z = data[idx++];
+                p.vx = data[idx++]; p.vy = data[idx++]; p.vz = data[idx++]; p.life = data[idx++];
+                for(let h=0; h<16; h++) { p.hist[h].x=p.x; p.hist[h].y=p.y; p.hist[h].z=p.z; }
             }
         }
 
-        // --- STREAMING_CHUNK:Event Listeners for Controls ---
         function pushHistorySnapshot(force = false) {
-            if (!force && HISTORY_CAPTURE_STRIDE > 1 && (physicsTickCounter % HISTORY_CAPTURE_STRIDE !== 0)) return;
-            const snap = captureState();
-            historyBuffer.push(snap);
+            historyBuffer.push(captureState());
             historyIndex = historyBuffer.length - 1;
         }
 
         function bigBang() {
-            particlePool.length = 0;
-            photons.length = 0;
-            historyBuffer.length = 0;
-            physicsTickCounter = 0;
-
-            const baseCount = parseInt(countSlider.value);
-            // Modified base colors slightly for better blending
-            createGroup('red', Math.floor(baseCount * 0.85), 0.8, 0.1, 0.2, 6.0, 2.0);    
-            createGroup('white', baseCount, 0.0, 0.6, 1.0, 4.0, 0.1);                       
-            createGroup('black', Math.floor(baseCount * 0.7), 0.6, 0.6, 0.7, 8.0, 2.5);   
-
+            particlePool.length = 0; photons.length = 0; historyBuffer.length = 0;
+            let c = parseInt(countSlider.value);
+            createGroup('red', Math.floor(c * 0.85), 0.8, 0.1, 0.2, 6.0, 2.0);    
+            createGroup('white', c, 0.0, 0.6, 1.0, 4.0, 0.1);                       
+            createGroup('black', Math.floor(c * 0.7), 0.6, 0.6, 0.7, 8.0, 2.5);   
             pushHistorySnapshot(true);
-            historyIndex = 0;
-            isPaused = false;
-            btnPlayPause.textContent = "Pause";
             updateTimelineUI();
         }
 
         function updateTimelineUI() {
-            if (historyBuffer.length > 1) timelineSlider.removeAttribute('disabled');
-            else timelineSlider.setAttribute('disabled', 'true');
-            timelineSlider.max = historyBuffer.length - 1;
+            timelineSlider.disabled = historyBuffer.length <= 1;
+            timelineSlider.max = Math.max(0, historyBuffer.length - 1);
             timelineSlider.value = historyIndex;
-            timelineValueDisplay.textContent = `${historyIndex} / ${historyBuffer.length - 1}`;
+            document.getElementById('timeline-value').textContent = `${historyIndex} / ${Math.max(0, historyBuffer.length - 1)}`;
         }
 
-        countSlider.addEventListener('input', (e) => countValueDisplay.textContent = e.target.value);
-        timeSlider.addEventListener('input', (e) => { 
-            timeScale = parseFloat(e.target.value);
-            timeValueDisplay.textContent = timeScale.toFixed(2) + 'x';
-        });
-
-        btnColorWaves.addEventListener('click', () => { colorMode = 0; updateDrawModes(btnColorWaves); });
-        btnColorDensity.addEventListener('click', () => { colorMode = 1; updateDrawModes(btnColorDensity); });
-        btnColorKinetic.addEventListener('click', () => { colorMode = 2; updateDrawModes(btnColorKinetic); });
-        btnColorStruct.addEventListener('click', () => { colorMode = 3; updateDrawModes(btnColorStruct); });
-
-        function updateDrawModes(activeBtn) {
-            [btnColorWaves, btnColorDensity, btnColorKinetic, btnColorStruct].forEach(b => b.classList.remove('active'));
-            activeBtn.classList.add('active');
-        }
-
-        let useCulling = true;
-        btnToggleCulling.addEventListener('click', () => {
-            useCulling = !useCulling;
-            btnToggleCulling.classList.toggle('active', useCulling);
-            btnToggleCulling.textContent = useCulling ? "Smart Culling: ON" : "Smart Culling: OFF";
-        });
-
-        let timeAccumulator = 0.0;
         timelineSlider.addEventListener('input', (e) => {
-            isPaused = true;
-            btnPlayPause.textContent = "Play";
+            isPaused = true; btnPlayPause.textContent = "Play";
             historyIndex = parseInt(e.target.value);
-            timeAccumulator = 0.0;
-            timelineValueDisplay.textContent = `${historyIndex} / ${historyBuffer.length - 1}`;
-            const snap = historyBuffer[historyIndex];
-            if (snap) restoreState(snap);
+            restoreState(historyBuffer[historyIndex]);
+            document.getElementById('timeline-value').textContent = `${historyIndex} / ${historyBuffer.length - 1}`;
         });
 
-        btnPlayPause.addEventListener('click', () => {
-            isPaused = !isPaused;
-            btnPlayPause.textContent = isPaused ? "Play" : "Pause";
-            if (!isPaused) timeAccumulator = 0.0;
-        });
+        // --- STREAMING_CHUNK:Expanded 6x6 Spatial Physics Solver ---
+        const CELL_SIZE = 220; 
 
-        btnClearHistory.addEventListener('click', () => {
-            if (historyBuffer.length > 0) {
-                historyBuffer.length = 0;
-                pushHistorySnapshot(true);
-                historyIndex = 0;
-                timeAccumulator = 0.0;
-                updateTimelineUI();
-            }
-        });
-
-        btnBang.addEventListener('click', bigBang);
-        bigBang();
-
-        // --- STREAMING_CHUNK:Physics Solver ---
-        const CELL_SIZE = 180; 
         function updatePhysics() {
-            if (isPaused) return;
-
-            const total = particlePool.length;
-            for (let i = 0; i < total; i++) particlePool[i].density = 0.0;
-            
-            // Re-map the flat-array Spatial Hash Grid for high speed neighbor checks
+            let total = particlePool.length;
             gridHead.fill(-1);
+            
             for (let i = 0; i < total; i++) {
-                const p = particlePool[i];
-                p.cx = Math.floor(p.x / CELL_SIZE);
-                p.cy = Math.floor(p.y / CELL_SIZE);
-                
-                const hash = ((p.cx * 73856093) ^ (p.cy * 19349663)) & HASH_MASK; 
-                gridNext[i] = gridHead[hash];
-                gridHead[hash] = i;
+                let p = particlePool[i]; p.dens = 0;
+                p.cx = Math.floor(p.x / CELL_SIZE); p.cy = Math.floor(p.y / CELL_SIZE); p.cz = Math.floor(p.z / CELL_SIZE);
+                let hash = ((p.cx * 73856093) ^ (p.cy * 19349663) ^ (p.cz * 83492791)) & HASH_MASK; 
+                gridNext[i] = gridHead[hash]; gridHead[hash] = i;
             }
 
-            const interactionRadius = 180, interactionRadiusSq = interactionRadius * interactionRadius;
-            const closeRepelRadius = 24;
+            // Expanding from a 3x3 grid to a 6x6 grid loop (-2 to +3). 
+            // In 3D, this is a 6x6x6 volumetric search, allowing deep gravity overlaps.
+            const gridMin = -2, gridMax = 3;
+            const zMin = is3DMode ? gridMin : 0, zMax = is3DMode ? gridMax : 0;
+            const interactRad = 450, interactRadSq = interactRad * interactRad;
+            const repelRad = 28;
 
             for (let i = 0; i < total; i++) {
                 let a = particlePool[i];
-                let fx = 0, fy = 0;
+                let fx=0, fy=0, fz=0;
 
-                for (let dx = -1; dx <= 1; dx++) {
-                    for (let dy = -1; dy <= 1; dy++) {
-                        const nx = a.cx + dx, ny = a.cy + dy;
-                        const hash = ((nx * 73856093) ^ (ny * 19349663)) & HASH_MASK;
-                        
-                        let bIdx = gridHead[hash];
-                        while (bIdx !== -1) {
-                            if (i !== bIdx) { // a !== b
-                                const b = particlePool[bIdx];
-                                
-                                // Verify hash collision boundary
-                                if (b.cx === nx && b.cy === ny) {
-                                    let rx = a.x - b.x, ry = a.y - b.y;
-                                    let distSq = rx * rx + ry * ry;
+                for (let dx = gridMin; dx <= gridMax; dx++) {
+                    for (let dy = gridMin; dy <= gridMax; dy++) {
+                        for (let dz = zMin; dz <= zMax; dz++) {
+                            let nx = a.cx+dx, ny = a.cy+dy, nz = a.cz+dz;
+                            let hash = ((nx * 73856093) ^ (ny * 19349663) ^ (nz * 83492791)) & HASH_MASK;
+                            
+                            let bIdx = gridHead[hash];
+                            while (bIdx !== -1) {
+                                if (i !== bIdx) {
+                                    let b = particlePool[bIdx];
+                                    if (b.cx === nx && b.cy === ny && b.cz === nz) {
+                                        let rx = a.x-b.x, ry = a.y-b.y, rz = a.z-b.z;
+                                        let distSq = rx*rx + ry*ry + rz*rz;
 
-                                    if (distSq > 0 && distSq < interactionRadiusSq) {
-                                        let dist = Math.sqrt(distSq);
-                                        a.density += (1.0 - dist / interactionRadius);
+                                        if (distSq > 0 && distSq < interactRadSq) {
+                                            let dist = Math.sqrt(distSq);
+                                            a.dens += (1.0 - dist / interactRad);
 
-                                        if (dist < closeRepelRadius) {
-                                            let repel = 15.0 * (1.0 - dist / closeRepelRadius);
-                                            fx += (rx / dist) * repel; fy += (ry / dist) * repel;
-
-                                            if (Math.random() < 0.001 && photons.length < 350) {
-                                                let burstX = (Math.random() - 0.5) * 45, burstY = (Math.random() - 0.5) * 45;
-                                                a.vx += burstX / a.mass; a.vy += burstY / a.mass;
-                                                b.vx -= burstX / b.mass; b.vy -= burstY / b.mass;
-                                                let angle = Math.random() * Math.PI * 2, speed = 15 + Math.random() * 10;
+                                            if (dist < repelRad) {
+                                                let repel = 18.0 * (1.0 - dist / repelRad);
+                                                fx += (rx/dist)*repel; fy += (ry/dist)*repel; fz += (rz/dist)*repel;
+                                            } else {
+                                                let forceMag = 0.0;
+                                                if (a.type === 'red' && b.type === 'black') forceMag = 35.0;
+                                                else if (a.type === 'black' && b.type === 'red') forceMag = 35.0;
+                                                else if (a.type === 'black' && b.type === 'black') forceMag = 20.0;
+                                                else if (a.type === 'red' && b.type === 'white') forceMag = 6.0;
+                                                else if (a.type === 'white' && b.type === 'red') forceMag = 6.0;
+                                                else if (a.type === 'white' && b.type === 'white') forceMag = -2.0;
+                                                else if (a.type === 'red' && b.type === 'red') forceMag = -20.0;
                                                 
-                                                const pHist = [];
-                                                for(let h=0; h<16; h++) pHist.push({x: (a.x+b.x)/2, y: (a.y+b.y)/2, vx:0, vy:0});
-                                                photons.push({
-                                                    x: (a.x + b.x) / 2, y: (a.y + b.y) / 2,
-                                                    vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
-                                                    life: 1.0, decay: 0.02, history: pHist, histIdx: 0
-                                                });
+                                                let gravity = (a.mass * b.mass) * 1.5; 
+                                                let tot = (forceMag + gravity) * (1.0 - dist / interactRad);
+                                                fx -= (rx/dist)*tot; fy -= (ry/dist)*tot; fz -= (rz/dist)*tot;
                                             }
-                                        } else {
-                                            let forceMag = 0.0;
-                                            
-                                            // Continuous Mass-based Forces (Strong Nuclear & Electromagnetic)
-                                            if (a.type === 'red' && b.type === 'black') forceMag = 28.0; // Strong nuclear attract
-                                            else if (a.type === 'black' && b.type === 'red') forceMag = 28.0;
-                                            else if (a.type === 'black' && b.type === 'black') forceMag = 18.0; // Mild nuclear glue
-                                            else if (a.type === 'red' && b.type === 'white') forceMag = 5.0; // EM attract
-                                            else if (a.type === 'white' && b.type === 'red') forceMag = 5.0; 
-                                            else if (a.type === 'white' && b.type === 'white') forceMag = -2.0; // EM repel
-                                            else if (a.type === 'red' && b.type === 'red') forceMag = -18.0; // Strong EM repel
-                                            
-                                            // Universal Gravitational Pull (scales with combined mass)
-                                            let gravity = (a.mass * b.mass) * 1.5; 
-                                            
-                                            let totalForce = (forceMag + gravity) * (1.0 - dist / interactionRadius);
-                                            
-                                            fx -= (rx / dist) * totalForce;
-                                            fy -= (ry / dist) * totalForce;
                                         }
                                     }
                                 }
+                                bIdx = gridNext[bIdx];
                             }
-                            bIdx = gridNext[bIdx];
                         }
                     }
                 }
-                // F = M * A  -->  A = F / M
-                a.vx += fx / a.mass; 
-                a.vy += fy / a.mass;
+                a.vx += fx/a.mass; a.vy += fy/a.mass; a.vz += fz/a.mass;
             }
 
-            for (let i = 0; i < total; i++) particlePool[i].density = Math.min(1.0, particlePool[i].density / 10.0);
-
-            const criticalRadiusSq = 55 * 55;
+            // Central gravity well to keep cluster from drifting away forever
             for (let i = 0; i < total; i++) {
-                let a = particlePool[i];
-                if (a.type === 'white') continue;
-                let localCount = 0;
-                let neighbors = [];
-
-                for (let dx = -1; dx <= 1; dx++) {
-                    for (let dy = -1; dy <= 1; dy++) {
-                        const nx = a.cx + dx, ny = a.cy + dy;
-                        const hash = ((nx * 73856093) ^ (ny * 19349663)) & HASH_MASK;
-                        
-                        let bIdx = gridHead[hash];
-                        while (bIdx !== -1) {
-                            if (i !== bIdx) {
-                                const b = particlePool[bIdx];
-                                if (b.cx === nx && b.cy === ny && b.type !== 'white') {
-                                    let rx = a.x - b.x, ry = a.y - b.y;
-                                    if ((rx*rx + ry*ry) < criticalRadiusSq) {
-                                        localCount++;
-                                        neighbors.push(b);
-                                    }
-                                }
-                            }
-                            bIdx = gridNext[bIdx];
-                        }
-                    }
-                }
-
-                // Fission Mechanics: Critical Mass Explosion
-                if (localCount > 35) {
-                    // Massive kinetic explosion for the particle
-                    a.vx += (Math.random() - 0.5) * 180;
-                    a.vy += (Math.random() - 0.5) * 180;
-
-                    // Radial blast force on surrounding clumped particles
-                    for (let n of neighbors) {
-                        let rx = n.x - a.x;
-                        let ry = n.y - a.y;
-                        let distSq = rx * rx + ry * ry;
-                        if (distSq > 0) {
-                            let dist = Math.sqrt(distSq);
-                            let force = 300.0 / Math.max(1.0, dist);
-                            n.vx += (rx / dist) * force;
-                            n.vy += (ry / dist) * force;
-                        }
-                    }
-
-                    // Massive burst of photons out of the blast
-                    for (let p = 0; p < 8; p++) {
-                        if (photons.length < MAX_EXPECTED_PHOTONS) {
-                            let angle = Math.random() * Math.PI * 2, speed = 30 + Math.random() * 40;
-                            const pHist = [];
-                            for(let h=0; h<16; h++) pHist.push({x: a.x, y: a.y, vx:0, vy:0});
-                            photons.push({
-                                x: a.x, y: a.y,
-                                vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
-                                life: 1.0, decay: 0.015, history: pHist, histIdx: 0
-                            });
-                        }
-                    }
-                } 
-                // Boiling effect (Pre-fission instability / smaller atoms)
-                else if (localCount > 20) {
-                    a.vx += (Math.random() - 0.5) * 50; a.vy += (Math.random() - 0.5) * 50;
-                    if (Math.random() < 0.1 && photons.length < 350) {
-                        let angle = Math.random() * Math.PI * 2, speed = 20 + Math.random() * 15;
-                        const pHist = [];
-                        for(let h=0; h<16; h++) pHist.push({x: a.x, y: a.y, vx:0, vy:0});
-                        photons.push({
-                            x: a.x, y: a.y,
-                            vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
-                            life: 1.0, decay: 0.02, history: pHist, histIdx: 0
-                        });
-                    }
+                let p = particlePool[i];
+                let dist = Math.sqrt(p.x*p.x + p.y*p.y + p.z*p.z);
+                if (dist > 1500) {
+                    let pull = (dist - 1500) * 0.0005;
+                    p.vx -= (p.x/dist)*pull; p.vy -= (p.y/dist)*pull; p.vz -= (p.z/dist)*pull;
                 }
             }
 
             for (let i = 0; i < total; i++) {
                 let p = particlePool[i];
-
-                // Thermal Jitter is inversely proportional to mass (heavy objects shake less)
-                let jitter = 15.0 / p.mass;
-                p.vx += (Math.random() - 0.5) * jitter;
-                p.vy += (Math.random() - 0.5) * jitter;
-
-                p.x += p.vx;
-                p.y += p.vy;
-
-                // Mass-dependent friction: Electrons keep speed to orbit, heavy nuclei stick together via "aether drag"
-                let drag = p.type === 'white' ? 0.96 : 0.76;
-                p.vx *= drag;
-                p.vy *= drag;
-
-                // Terminal velocity limits to prevent simulation explosion
-                const maxSpeed = p.type === 'white' ? 140.0 : 50.0;
-                const speedSq = p.vx*p.vx + p.vy*p.vy;
-                if(speedSq > maxSpeed*maxSpeed) {
-                    const speed = Math.sqrt(speedSq);
-                    p.vx = (p.vx / speed) * maxSpeed;
-                    p.vy = (p.vy / speed) * maxSpeed;
+                p.dens = Math.min(1.0, p.dens / 15.0);
+                
+                let jitter = 18.0 / p.mass;
+                p.vx += (Math.random()-0.5)*jitter; p.vy += (Math.random()-0.5)*jitter; p.vz += (Math.random()-0.5)*jitter;
+                
+                if (!is3DMode) { p.z = 0; p.vz = 0; }
+                p.x += p.vx; p.y += p.vy; p.z += p.vz;
+                
+                let drag = p.type === 'white' ? 0.95 : 0.72;
+                p.vx *= drag; p.vy *= drag; p.vz *= drag;
+                
+                let limit = p.type === 'white' ? 150.0 : 60.0;
+                let sq = p.vx*p.vx + p.vy*p.vy + p.vz*p.vz;
+                if(sq > limit*limit) {
+                    let s = Math.sqrt(sq); p.vx = (p.vx/s)*limit; p.vy = (p.vy/s)*limit; p.vz = (p.vz/s)*limit;
                 }
-
-                // Write to ring buffer for historic trails (zero allocations!)
-                let hIdx = p.histIdx;
-                let h = p.history[hIdx];
-                h.x = p.x; h.y = p.y; h.vx = p.vx; h.vy = p.vy;
-                p.histIdx = (hIdx + 1) % MAX_TRAIL_LENGTH;
+                
+                let h = p.hist[p.histIdx];
+                h.x=p.x; h.y=p.y; h.z=p.z; h.vx=p.vx; h.vy=p.vy; h.vz=p.vz;
+                p.histIdx = (p.histIdx + 1) % 20;
             }
 
             for (let i = photons.length - 1; i >= 0; i--) {
                 let p = photons[i];
-                p.x += p.vx; p.y += p.vy;
-                p.life -= p.decay;
-                p.vx *= 0.96; p.vy *= 0.96;
-                
-                let hIdx = p.histIdx;
-                let h = p.history[hIdx];
-                h.x = p.x; h.y = p.y; h.vx = p.vx; h.vy = p.vy;
-                p.histIdx = (hIdx + 1) % 16;
-
+                if(!is3DMode) p.vz = 0;
+                p.x += p.vx; p.y += p.vy; p.z += p.vz;
+                p.life -= 0.02; p.vx *= 0.96; p.vy *= 0.96; p.vz *= 0.96;
+                let h = p.hist[p.histIdx];
+                h.x=p.x; h.y=p.y; h.z=p.z;
+                p.histIdx = (p.histIdx + 1) % 16;
                 if (p.life <= 0) photons.splice(i, 1);
             }
         }
 
-        function updateStabilityMetric() {
-            const total = particlePool.length;
-            if (total === 0) return;
-            let totalSpeed = 0, freeNeutrons = 0;
+        // --- STREAMING_CHUNK:Main Render Loop ---
+        let timeAccum = 0.0, frames = 0, lastTime = performance.now();
 
-            for (let i = 0; i < total; i++) {
-                const p = particlePool[i];
-                totalSpeed += Math.sqrt(p.vx * p.vx + p.vy * p.vy);
-                if (p.type === 'black' && p.density < 0.05) freeNeutrons++;
-            }
-
-            const avgSpeed = totalSpeed / total;
-            let stability = 100.0;
-            stability -= Math.min(20.0, (photons.length / 350.0) * 20.0); 
-            stability -= (freeNeutrons / total) * 80.0; 
-            if (avgSpeed > 10.0) stability -= (avgSpeed - 10.0) * 3.0; 
-            stability = Math.max(0.0, Math.min(100.0, stability));
-
-            stabilityValue.textContent = stability.toFixed(1) + '%';
-            stabilityBar.style.width = stability + '%';
-
-            if (stability > 80.0) {
-                stabilityBar.style.background = 'var(--success)';
-                stabilityValue.style.color = 'var(--success)';
-                stabilityDesc.textContent = 'System Equilibrium: Stable';
-            } else if (stability > 50.0) {
-                stabilityBar.style.background = '#f59e0b';
-                stabilityValue.style.color = '#f59e0b';
-                stabilityDesc.textContent = 'Warning: Localized Perturbations';
-            } else if (stability > 20.0) {
-                stabilityBar.style.background = '#f97316';
-                stabilityValue.style.color = '#f97316';
-                stabilityDesc.textContent = 'Critical Alert: Heavy Fission!';
-            } else {
-                stabilityBar.style.background = 'var(--danger)';
-                stabilityValue.style.color = 'var(--danger)';
-                stabilityDesc.textContent = 'Severe Entropy: Quantum Collapse!';
-            }
-        }
-
-        // --- STREAMING_CHUNK:Rendering WebGL Scene and New Tail Styles ---
-        function drawScene() {
+        function draw() {
             gl.clearColor(0.0, 0.0, 0.0, 1.0);
             gl.clear(gl.COLOR_BUFFER_BIT);
+            gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
 
-            gl.enable(gl.BLEND);
-            gl.blendFunc(gl.SRC_ALPHA, gl.ONE); // Additive blending for glows
-
-            gl.useProgram(gridProgram);
-            gl.uniform2f(gridResolutionLoc, width, height);
-            gl.uniform2f(gridCameraPosLoc, camera.x, camera.y);
-            gl.uniform1f(gridCameraZoomLoc, camera.zoom);
+            // Draw Background Grid
+            gl.useProgram(gridProg);
+            let gridLoc = gl.getUniformLocation(gridProg, 'u_matrix');
+            gl.uniformMatrix4fv(gridLoc, false, projViewMatrix);
             gl.bindBuffer(gl.ARRAY_BUFFER, gridBuffer);
-            gl.enableVertexAttribArray(gridPositionLoc);
-            gl.vertexAttribPointer(gridPositionLoc, 2, gl.FLOAT, false, 0, 0);
-            // Render the full screen quad for the background measurement grid
-            gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+            let gPosLoc = gl.getAttribLocation(gridProg, 'a_position');
+            gl.enableVertexAttribArray(gPosLoc);
+            gl.vertexAttribPointer(gPosLoc, 3, gl.FLOAT, false, 0, 0);
+            gl.drawArrays(gl.LINES, 0, gridVerts.length / 3);
 
+            // Draw Particles
             gl.useProgram(program);
-            gl.uniform2f(resolutionLoc, width, height);
-            gl.uniform2f(cameraPosLoc, camera.x, camera.y);
-            gl.uniform1f(cameraZoomLoc, camera.zoom);
+            gl.uniformMatrix4fv(matrixLoc, false, projViewMatrix);
+            gl.uniform1i(is3DLoc, is3DMode ? 1 : 0);
             gl.uniform1i(colorModeLoc, colorMode);
-            gl.uniform1f(timeLoc, performance.now() / 1000.0); // Pass system time to shader
+            gl.uniform1f(timeLoc, performance.now() / 1000.0);
             
             gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+            vertexCount = 0;
+            let renderCnt = 0;
 
-            beginVertexFrame();
-
-            const margin = 500.0 / camera.zoom; 
-            const minWorldX = -width / (2 * camera.zoom) - camera.x - margin;
-            const maxWorldX =  width / (2 * camera.zoom) - camera.x + margin;
-            const minWorldY = -height / (2 * camera.zoom) - camera.y - margin;
-            const maxWorldY =  height / (2 * camera.zoom) - camera.y + margin;
-
-            renderedCount = 0; 
+            let m = projViewMatrix;
 
             particlePool.forEach(p => {
                 if (useCulling) {
-                    if (p.x < minWorldX || p.x > maxWorldX || p.y < minWorldY || p.y > maxWorldY) return; 
+                    let clipW = p.x * m[3] + p.y * m[7] + p.z * m[11] + m[15];
+                    // Add a generous boundary margin so trails/waves don't clip harshly at edges
+                    let margin = Math.abs(clipW) * 1.5 + 800.0; 
+                    let clipX = p.x * m[0] + p.y * m[4] + p.z * m[8] + m[12];
+                    if (clipX < -margin || clipX > margin) return;
+                    let clipY = p.x * m[1] + p.y * m[5] + p.z * m[9] + m[13];
+                    if (clipY < -margin || clipY > margin) return;
+                    let clipZ = p.x * m[2] + p.y * m[6] + p.z * m[10] + m[14];
+                    if (clipZ < -margin || clipZ > margin) return;
                 }
-                
-                renderedCount++;
-                let typeVal = (p.type === 'white') ? 1.0 : (p.type === 'black') ? 2.0 : 0.0; 
 
-                const len = MAX_TRAIL_LENGTH;
-                for (let h = 0; h < len; h++) {
-                    // Iterate history from oldest to newest based on ring buffer index
-                    let actualH = (p.histIdx + h) % len;
-                    let histPt = p.history[actualH];
+                renderCnt++;
+                let tVal = (p.type === 'white')?1:(p.type==='black')?2:0;
+                for (let h = 0; h < 20; h++) {
+                    let hPt = p.hist[(p.histIdx + h) % 20];
+                    let fade = FADE_LUT[h], tap = TAPER_LUT[h];
+                    let spd = Math.sqrt(hPt.vx*hPt.vx + hPt.vy*hPt.vy + hPt.vz*hPt.vz);
+                    let ent = Math.min(1.0, spd / 40.0);
 
-                    // Use precalculated LUTs for massive FPS boost
-                    let fade = FADE_LUT[h]; 
-                    let taper = TAPER_LUT[h]; 
-                    
-                    let speed = Math.sqrt(histPt.vx * histPt.vx + histPt.vy * histPt.vy);
-                    let entropy = Math.min(1.0, speed / 40.0);
-
-                    // Reduced overlapping alpha values slightly because the ripples 
-                    // create intense constructive interference when stacked
-                    
-                    // Outer Wave: wide, very transparent
-                    pushVertex(histPt.x, histPt.y, p.r, p.g, p.b, fade * 0.04, p.radius * 3.5 * taper, typeVal, p.density, entropy);
-                    
-                    // Mid Layer: Body of the wave
-                    pushVertex(histPt.x, histPt.y, Math.min(1.0, p.r * 1.2), Math.min(1.0, p.g * 1.2), Math.min(1.0, p.b * 1.2), fade * 0.15, p.radius * 2.0 * taper, typeVal, p.density, entropy);
-
-                    // Inner Core: Soft, intense
-                    pushVertex(histPt.x, histPt.y, Math.min(1.0, p.r * 1.5), Math.min(1.0, p.g * 1.5), Math.min(1.0, p.b * 1.5), fade * 0.55, p.radius * 0.8 * taper, typeVal, p.density, entropy);
+                    pushVertex(hPt.x, hPt.y, hPt.z, p.r, p.g, p.b, fade * 0.04, p.rad * 3.5 * tap, tVal, p.dens, ent);
+                    pushVertex(hPt.x, hPt.y, hPt.z, p.r*1.2, p.g*1.2, p.b*1.2, fade * 0.15, p.rad * 2.0 * tap, tVal, p.dens, ent);
+                    pushVertex(hPt.x, hPt.y, hPt.z, p.r*1.5, p.g*1.5, p.b*1.5, fade * 0.55, p.rad * 0.8 * tap, tVal, p.dens, ent);
                 }
             });
 
-            photons.forEach(p => {
-                if (useCulling && (p.x < minWorldX || p.x > maxWorldX || p.y < minWorldY || p.y > maxWorldY)) return;
-                renderedCount++;
-                const len = 16;
-                for (let h = 0; h < len; h++) {
-                    let actualH = (p.histIdx + h) % len;
-                    let histPt = p.history[actualH];
-                    
-                    let fade = PHOTON_FADE_LUT[h];
-                    let taper = PHOTON_TAPER_LUT[h];
-
-                    // Outer photon glow
-                    pushVertex(histPt.x, histPt.y, 1.0, 0.85, 0.1, p.life * fade * 0.2, 8.0 * taper, 3.0, 1.0, 1.0);
-                    // Inner photon spark
-                    pushVertex(histPt.x, histPt.y, 1.0, 1.0, 1.0, p.life * fade * 0.9, 3.0 * taper, 3.0, 1.0, 1.0);
-                }
-            });
-
-            if (vertexCount > 0) {
-                gl.bufferSubData(gl.ARRAY_BUFFER, 0, vertexData.subarray(0, vertexCount * FLOATS_PER_VERTEX));
-            }
-
-            const stride = FLOATS_PER_VERTEX * 4; 
-            gl.enableVertexAttribArray(positionLoc); gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, stride, 0);
-            gl.enableVertexAttribArray(colorLoc); gl.vertexAttribPointer(colorLoc, 3, gl.FLOAT, false, stride, 2 * 4);
-            gl.enableVertexAttribArray(alphaLoc); gl.vertexAttribPointer(alphaLoc, 1, gl.FLOAT, false, stride, 5 * 4);
-            gl.enableVertexAttribArray(sizeLoc); gl.vertexAttribPointer(sizeLoc, 1, gl.FLOAT, false, stride, 6 * 4);
-            gl.enableVertexAttribArray(typeLoc); gl.vertexAttribPointer(typeLoc, 1, gl.FLOAT, false, stride, 7 * 4);
-            gl.enableVertexAttribArray(densityLoc); gl.vertexAttribPointer(densityLoc, 1, gl.FLOAT, false, stride, 8 * 4);
-            gl.enableVertexAttribArray(entropyLoc); gl.vertexAttribPointer(entropyLoc, 1, gl.FLOAT, false, stride, 9 * 4);
+            if (vertexCount > 0) gl.bufferSubData(gl.ARRAY_BUFFER, 0, vertexData.subarray(0, vertexCount * FLOATS_PER_VERTEX));
+            
+            let stride = FLOATS_PER_VERTEX * 4;
+            gl.enableVertexAttribArray(posLoc); gl.vertexAttribPointer(posLoc, 3, gl.FLOAT, false, stride, 0);
+            gl.enableVertexAttribArray(colorLoc); gl.vertexAttribPointer(colorLoc, 4, gl.FLOAT, false, stride, 3*4);
+            gl.enableVertexAttribArray(sizeLoc); gl.vertexAttribPointer(sizeLoc, 1, gl.FLOAT, false, stride, 7*4);
+            gl.enableVertexAttribArray(typeLoc); gl.vertexAttribPointer(typeLoc, 1, gl.FLOAT, false, stride, 8*4);
+            gl.enableVertexAttribArray(densityLoc); gl.vertexAttribPointer(densityLoc, 1, gl.FLOAT, false, stride, 9*4);
+            gl.enableVertexAttribArray(entropyLoc); gl.vertexAttribPointer(entropyLoc, 1, gl.FLOAT, false, stride, 10*4);
 
             gl.drawArrays(gl.POINTS, 0, vertexCount);
+            
+            frames++;
+            let now = performance.now();
+            if (now - lastTime >= 500) {
+                document.getElementById('stat-fps').textContent = Math.round((frames * 1000) / (now - lastTime));
+                document.getElementById('stat-rendered').textContent = renderCnt;
+                frames = 0; lastTime = now;
+            }
         }
 
-        let lastFpsUpdate = 0;
-        let lastStabilityUpdate = 0;
-        let framesCount = 0;
-        let fpsValue = 60;
-
-        // --- STREAMING_CHUNK:Main Engine Loop ---
-        function loop(timestamp) {
+        function loop() {
             if (!isPaused && timeScale > 0.0) {
                 if (historyIndex < historyBuffer.length - 1) {
-                    restoreState(historyBuffer[historyIndex]);
-                    historyBuffer.length = historyIndex + 1;
+                    restoreState(historyBuffer[historyIndex]); historyBuffer.length = historyIndex + 1;
                 }
-
-                timeAccumulator += timeScale;
-
-                // FIX: Implemented an iteration limit (max 3 ticks per frame)
-                // This prevents the CPU from falling into a "death spiral" lag
-                // if the physics gets too heavy at high Time Dilate speeds.
+                timeAccum += timeScale;
                 let iters = 0;
-                while (timeAccumulator >= 1.0 && iters < 3) {
+                while (timeAccum >= 1.0 && iters < 3) {
                     updatePhysics();
-                    physicsTickCounter++;
                     pushHistorySnapshot(false);
-                    historyIndex = historyBuffer.length - 1;
-                    timeAccumulator -= 1.0;
-                    iters++;
+                    timeAccum -= 1.0; iters++;
                 }
-
-                // If we hit our max iter safety cap, we discard the remaining accumulated time
-                // to prevent permanent locking. This ensures UI stays responsive.
-                if (timeAccumulator >= 1.0) {
-                    timeAccumulator = 0.0; 
-                }
-                
+                if (timeAccum >= 1.0) timeAccum = 0.0; 
                 updateTimelineUI();
             }
-
-            if (timestamp - lastStabilityUpdate >= 250) {
-                updateStabilityMetric();
-                lastStabilityUpdate = timestamp;
-            }
-
-            framesCount++;
-            if (timestamp - lastFpsUpdate >= 500) {
-                fpsValue = Math.round((framesCount * 1000) / (timestamp - lastFpsUpdate));
-                framesCount = 0;
-                lastFpsUpdate = timestamp;
-                statFps.textContent = fpsValue;
-            }
-
-            drawScene(); 
-
-            if ((framesCount & 7) === 0) {
-                statRendered.textContent = renderedCount;
-                statHistory.textContent = historyBuffer.length;
-            }
-
+            draw();
             requestAnimationFrame(loop);
         }
+
+        resize();
+        bigBang();
         requestAnimationFrame(loop);
+
     </script>
 </body>
 </html>
